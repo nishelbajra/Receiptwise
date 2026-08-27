@@ -50,23 +50,23 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="w-full max-w-md bg-slate-900 border-slate-800">
+    <Card className="w-full max-w-md bg-white border-gray-200 shadow-xl">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-slate-100">Welcome back</CardTitle>
-        <CardDescription className="text-slate-400">
+        <CardTitle className="text-2xl font-bold text-gray-900">Welcome back</CardTitle>
+        <CardDescription className="text-gray-500">
           Sign in to your account to continue
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {formError && (
-          <div className="rounded-lg bg-rose-500/10 border border-rose-500/20 px-4 py-3 text-sm text-rose-400">
+          <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
             {formError}
           </div>
         )}
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-slate-300">Email</Label>
+            <Label htmlFor="email" className="text-gray-700">Email</Label>
             <Input
               id="email"
               name="email"
@@ -74,13 +74,13 @@ export default function LoginPage() {
               placeholder="you@example.com"
               required
               disabled={isLoading}
-              className="bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500"
+              className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-red-500 focus:ring-red-500"
             />
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="text-slate-300">Password</Label>
-              <Link href="/forgot-password" className="text-sm text-sky-400 hover:text-sky-300">
+              <Label htmlFor="password" className="text-gray-700">Password</Label>
+              <Link href="/forgot-password" className="text-sm text-red-500 hover:text-red-600">
                 Forgot password?
               </Link>
             </div>
@@ -91,12 +91,12 @@ export default function LoginPage() {
               placeholder="••••••••"
               required
               disabled={isLoading}
-              className="bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500"
+              className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-red-500 focus:ring-red-500"
             />
           </div>
           <Button
             type="submit"
-            className="w-full bg-sky-500 hover:bg-sky-600 text-white"
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-medium rounded-full"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -115,17 +115,17 @@ export default function LoginPage() {
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-slate-800" />
+            <span className="w-full border-t border-gray-200" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-slate-900 px-2 text-slate-500">Or continue with</span>
+            <span className="bg-white px-2 text-gray-400">Or continue with</span>
           </div>
         </div>
 
         <Button
           variant="outline"
           type="button"
-          className="w-full border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-slate-100"
+          className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-full"
           onClick={() => signIn("google", { callbackUrl })}
           disabled={isLoading}
         >
@@ -151,9 +151,9 @@ export default function LoginPage() {
         </Button>
       </CardContent>
       <CardFooter>
-        <p className="text-center text-sm text-slate-400 w-full">
+        <p className="text-center text-sm text-gray-500 w-full">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-sky-400 hover:text-sky-300 font-medium">
+          <Link href="/register" className="text-red-500 hover:text-red-600 font-medium">
             Sign up
           </Link>
         </p>

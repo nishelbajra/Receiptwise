@@ -1,91 +1,87 @@
 import { Header } from "@/components/layout/header";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, Plus, Building2, Wallet } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CreditCard, Building2, Wallet, Plus, Info } from "lucide-react";
 
 export default function AccountsPage() {
   return (
-    <>
-      <Header title="Financial Accounts" />
+    <div className="bg-gray-50 min-h-screen">
+      <Header title="Accounts" />
+      
       <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <p className="text-slate-400">Manage your bank accounts, credit cards, and payment methods</p>
-          <button className="inline-flex items-center gap-2 rounded-lg bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 font-medium transition-colors">
-            <Plus className="h-4 w-4" />
-            Add Account
-          </button>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* Add Credit Card */}
-          <Card className="bg-slate-900 border-slate-800 border-dashed hover:border-slate-700 cursor-pointer transition-colors">
-            <CardContent className="py-8">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-full bg-sky-500/10 flex items-center justify-center mb-3">
-                  <CreditCard className="h-6 w-6 text-sky-400" />
-                </div>
-                <h3 className="font-medium text-slate-200 mb-1">Add Credit Card</h3>
-                <p className="text-sm text-slate-500">Track rewards and benefits</p>
+        {/* Add Account Options */}
+        <div className="grid md:grid-cols-3 gap-4">
+          <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+            <CardContent className="p-6 text-center">
+              <div className="w-14 h-14 rounded-full bg-red-500 mx-auto mb-4 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <CreditCard className="h-7 w-7 text-white" />
               </div>
+              <h3 className="font-semibold text-gray-900 mb-1">Credit Card</h3>
+              <p className="text-sm text-gray-500">Track rewards and spending</p>
             </CardContent>
           </Card>
 
-          {/* Add Bank Account */}
-          <Card className="bg-slate-900 border-slate-800 border-dashed hover:border-slate-700 cursor-pointer transition-colors">
-            <CardContent className="py-8">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mb-3">
-                  <Building2 className="h-6 w-6 text-emerald-400" />
-                </div>
-                <h3 className="font-medium text-slate-200 mb-1">Add Bank Account</h3>
-                <p className="text-sm text-slate-500">Connect checking or savings</p>
+          <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+            <CardContent className="p-6 text-center">
+              <div className="w-14 h-14 rounded-full bg-red-500 mx-auto mb-4 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Building2 className="h-7 w-7 text-white" />
               </div>
+              <h3 className="font-semibold text-gray-900 mb-1">Bank Account</h3>
+              <p className="text-sm text-gray-500">Checking or savings</p>
             </CardContent>
           </Card>
 
-          {/* Add Other */}
-          <Card className="bg-slate-900 border-slate-800 border-dashed hover:border-slate-700 cursor-pointer transition-colors">
-            <CardContent className="py-8">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-full bg-violet-500/10 flex items-center justify-center mb-3">
-                  <Wallet className="h-6 w-6 text-violet-400" />
-                </div>
-                <h3 className="font-medium text-slate-200 mb-1">Other Account</h3>
-                <p className="text-sm text-slate-500">Cash, digital wallets, etc.</p>
+          <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+            <CardContent className="p-6 text-center">
+              <div className="w-14 h-14 rounded-full bg-red-500 mx-auto mb-4 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Wallet className="h-7 w-7 text-white" />
               </div>
+              <h3 className="font-semibold text-gray-900 mb-1">Other</h3>
+              <p className="text-sm text-gray-500">Cash, digital wallet, etc.</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Info Card */}
-        <Card className="bg-slate-900 border-slate-800">
-          <CardHeader>
-            <CardTitle className="text-slate-100">Why add your accounts?</CardTitle>
-            <CardDescription className="text-slate-400">
-              Adding your financial accounts helps ReceiptWise provide better insights
-            </CardDescription>
+        {/* Accounts List */}
+        <Card className="bg-white border-gray-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-gray-900">Your Accounts</CardTitle>
+            <button className="inline-flex items-center gap-2 rounded-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 text-sm font-medium transition-colors">
+              <Plus className="h-4 w-4" />
+              Add Account
+            </button>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-3 text-sm text-slate-300">
-              <li className="flex items-start gap-2">
-                <span className="text-sky-400">•</span>
-                <span>Link transactions to the correct payment method automatically</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-sky-400">•</span>
-                <span>Get credit card reward recommendations based on your spending</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-sky-400">•</span>
-                <span>See spending breakdown by account</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-sky-400">•</span>
-                <span>Bank sync coming in a future update (Plaid integration)</span>
-              </li>
-            </ul>
+            <div className="flex flex-col items-center justify-center py-12">
+              <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+                <CreditCard className="h-8 w-8 text-gray-400" />
+              </div>
+              <p className="text-gray-500 mb-2">No accounts added yet</p>
+              <p className="text-sm text-gray-400 text-center max-w-md">
+                Add your credit cards and bank accounts to track spending across all your payment methods
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Info Card */}
+        <Card className="bg-white border-gray-200 shadow-sm">
+          <CardContent className="p-6">
+            <div className="flex gap-4">
+              <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                <Info className="h-5 w-5 text-red-500" />
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900 mb-1">Why add accounts?</h4>
+                <p className="text-sm text-gray-500">
+                  Adding your payment methods helps us track which card you used for each transaction. 
+                  For credit cards, we can also help you optimize rewards by suggesting the best card 
+                  for each purchase category.
+                </p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
-    </>
+    </div>
   );
 }

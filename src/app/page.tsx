@@ -21,27 +21,26 @@ export default async function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="border-b border-slate-800/50">
+      <header className="border-b border-gray-100">
         <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Wallet className="h-8 w-8 text-sky-400" />
-            <span className="text-xl font-bold">
-              <span className="text-sky-400">Receipt</span>
-              <span className="text-slate-100">Wise</span>
+            <Wallet className="h-8 w-8 text-red-500" />
+            <span className="text-xl font-bold text-gray-900">
+              ReceiptWise
             </span>
           </div>
           <div className="flex items-center gap-4">
             <Link 
               href="/login" 
-              className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
+              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
             >
               Sign in
             </Link>
             <Link 
               href="/register" 
-              className="rounded-lg bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 text-sm font-medium transition-colors"
+              className="rounded-full bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 text-sm font-medium transition-colors"
             >
               Get Started
             </Link>
@@ -51,32 +50,30 @@ export default async function LandingPage() {
 
       {/* Hero */}
       <section className="mx-auto max-w-7xl px-4 py-24 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-4 py-1.5 text-sm text-sky-400 mb-6">
+        <div className="inline-flex items-center gap-2 rounded-full bg-red-50 border border-red-100 px-4 py-1.5 text-sm text-red-600 mb-6">
           <Brain className="h-4 w-4" />
           AI-Powered Financial Intelligence
         </div>
-        <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6">
-          <span className="text-slate-100">Track spending with</span>
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-gray-900">
+          Track spending with
           <br />
-          <span className="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">
-            intelligent receipt scanning
-          </span>
+          <span className="text-red-500">intelligent receipt scanning</span>
         </h1>
-        <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-10">
+        <p className="text-xl text-gray-500 max-w-2xl mx-auto mb-10">
           Upload a receipt photo. Our AI extracts everything automatically. 
           Get real-time insights on your spending patterns and optimize your finances.
         </p>
         <div className="flex items-center justify-center gap-4">
           <Link 
             href="/register" 
-            className="inline-flex items-center gap-2 rounded-lg bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 text-lg font-medium transition-colors"
+            className="inline-flex items-center gap-2 rounded-full bg-red-500 hover:bg-red-600 text-white px-8 py-4 text-lg font-medium transition-colors shadow-lg shadow-red-500/25"
           >
             Start for free
             <ArrowRight className="h-5 w-5" />
           </Link>
           <Link 
             href="#features" 
-            className="rounded-lg border border-slate-700 hover:border-slate-600 text-slate-300 hover:text-white px-6 py-3 text-lg font-medium transition-colors"
+            className="rounded-full border border-gray-300 hover:border-gray-400 text-gray-700 hover:text-gray-900 px-8 py-4 text-lg font-medium transition-colors"
           >
             See features
           </Link>
@@ -84,70 +81,72 @@ export default async function LandingPage() {
       </section>
 
       {/* Features */}
-      <section id="features" className="mx-auto max-w-7xl px-4 py-24">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-slate-100 mb-4">
-            Everything you need to master your finances
-          </h2>
-          <p className="text-lg text-slate-400">
-            Powerful features designed to give you complete control over your spending
-          </p>
-        </div>
+      <section id="features" className="bg-gray-50 py-24">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Everything you need to master your finances
+            </h2>
+            <p className="text-lg text-gray-500">
+              Powerful features designed to give you complete control over your spending
+            </p>
+          </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[
-            {
-              icon: Receipt,
-              title: "Smart Receipt Scanning",
-              description: "Take a photo of any receipt. Our AI extracts merchant, items, totals, and categorizes automatically.",
-            },
-            {
-              icon: Brain,
-              title: "AI Financial Assistant",
-              description: "Ask questions about your spending in plain English. Get instant, accurate answers from your actual data.",
-            },
-            {
-              icon: PieChart,
-              title: "Spending Analytics",
-              description: "Visualize where your money goes with beautiful charts and actionable insights.",
-            },
-            {
-              icon: CreditCard,
-              title: "Card Reward Optimization",
-              description: "Track your credit cards and get suggestions for which card to use for maximum rewards.",
-            },
-            {
-              icon: Bell,
-              title: "Proactive Alerts",
-              description: "Get notified about unusual spending, budget limits, and important financial events.",
-            },
-            {
-              icon: Shield,
-              title: "Bank-Grade Security",
-              description: "Your financial data is encrypted at rest and in transit. We never sell your data.",
-            },
-          ].map((feature) => (
-            <div 
-              key={feature.title}
-              className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 hover:border-slate-700 transition-colors"
-            >
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-sky-500/10 text-sky-400 mb-4">
-                <feature.icon className="h-6 w-6" />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                icon: Receipt,
+                title: "Smart Receipt Scanning",
+                description: "Take a photo of any receipt. Our AI extracts merchant, items, totals, and categorizes automatically.",
+              },
+              {
+                icon: Brain,
+                title: "AI Financial Assistant",
+                description: "Ask questions about your spending in plain English. Get instant, accurate answers from your actual data.",
+              },
+              {
+                icon: PieChart,
+                title: "Spending Analytics",
+                description: "Visualize where your money goes with beautiful charts and actionable insights.",
+              },
+              {
+                icon: CreditCard,
+                title: "Card Reward Optimization",
+                description: "Track your credit cards and get suggestions for which card to use for maximum rewards.",
+              },
+              {
+                icon: Bell,
+                title: "Proactive Alerts",
+                description: "Get notified about unusual spending, budget limits, and important financial events.",
+              },
+              {
+                icon: Shield,
+                title: "Bank-Grade Security",
+                description: "Your financial data is encrypted at rest and in transit. We never sell your data.",
+              },
+            ].map((feature) => (
+              <div 
+                key={feature.title}
+                className="rounded-2xl border border-gray-200 bg-white p-6 hover:shadow-lg hover:shadow-red-500/5 transition-all"
+              >
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-500 text-white mb-4">
+                  <feature.icon className="h-6 w-6" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                <p className="text-gray-500">{feature.description}</p>
               </div>
-              <h3 className="text-lg font-semibold text-slate-100 mb-2">{feature.title}</h3>
-              <p className="text-slate-400">{feature.description}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
       {/* How it works */}
       <section className="mx-auto max-w-7xl px-4 py-24">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-slate-100 mb-4">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
             How it works
           </h2>
-          <p className="text-lg text-slate-400">
+          <p className="text-lg text-gray-500">
             From receipt to insight in seconds
           </p>
         </div>
@@ -160,28 +159,28 @@ export default async function LandingPage() {
             { step: "4", title: "Insight", description: "See your dashboard update with new insights" },
           ].map((item) => (
             <div key={item.step} className="text-center">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-sky-500 text-white text-xl font-bold mb-4">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-red-500 text-white text-xl font-bold mb-4 shadow-lg shadow-red-500/25">
                 {item.step}
               </div>
-              <h3 className="text-lg font-semibold text-slate-100 mb-2">{item.title}</h3>
-              <p className="text-slate-400">{item.description}</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.title}</h3>
+              <p className="text-gray-500">{item.description}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* CTA */}
-      <section className="mx-auto max-w-7xl px-4 py-24">
-        <div className="rounded-2xl bg-gradient-to-r from-sky-500/10 to-cyan-500/10 border border-sky-500/20 p-12 text-center">
-          <h2 className="text-3xl font-bold text-slate-100 mb-4">
+      <section className="bg-red-500 py-24">
+        <div className="mx-auto max-w-7xl px-4 text-center">
+          <h2 className="text-4xl font-bold text-white mb-4">
             Ready to take control of your finances?
           </h2>
-          <p className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg text-red-100 mb-8 max-w-2xl mx-auto">
             Join thousands of users who have transformed how they track and understand their spending.
           </p>
           <Link 
             href="/register" 
-            className="inline-flex items-center gap-2 rounded-lg bg-sky-500 hover:bg-sky-600 text-white px-8 py-4 text-lg font-medium transition-colors"
+            className="inline-flex items-center gap-2 rounded-full bg-white hover:bg-gray-100 text-red-500 px-8 py-4 text-lg font-medium transition-colors"
           >
             <CheckCircle2 className="h-5 w-5" />
             Create free account
@@ -190,8 +189,8 @@ export default async function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800/50 py-8">
-        <div className="mx-auto max-w-7xl px-4 text-center text-slate-500 text-sm">
+      <footer className="border-t border-gray-100 py-8 bg-white">
+        <div className="mx-auto max-w-7xl px-4 text-center text-gray-400 text-sm">
           <p>&copy; {new Date().getFullYear()} ReceiptWise. Built with Next.js, TypeScript, and AI.</p>
         </div>
       </footer>

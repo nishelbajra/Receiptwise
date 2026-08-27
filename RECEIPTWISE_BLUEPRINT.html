@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReceiptWise - Architecture Blueprint</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #1a1a2e;
+      background: #fff;
+      padding: 40px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    @media print {
+      body { padding: 20px; }
+      .page-break { page-break-before: always; }
+      h2 { page-break-after: avoid; }
+      table, pre { page-break-inside: avoid; }
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      color: #0ea5e9;
+      margin-bottom: 0.5rem;
+      border-bottom: 3px solid #0ea5e9;
+      padding-bottom: 10px;
+    }
+    
+    .subtitle {
+      font-size: 1.2rem;
+      color: #64748b;
+      margin-bottom: 2rem;
+    }
+    
+    .meta {
+      background: #f1f5f9;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+    
+    h2 {
+      font-size: 1.5rem;
+      color: #1e293b;
+      margin: 2rem 0 1rem;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    
+    h3 {
+      font-size: 1.1rem;
+      color: #334155;
+      margin: 1.5rem 0 0.75rem;
+    }
+    
+    p { margin-bottom: 1rem; }
+    
+    ul, ol {
+      margin: 0.5rem 0 1rem 1.5rem;
+    }
+    
+    li { margin-bottom: 0.4rem; }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+    
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    tr:nth-child(even) { background: #fafafa; }
+    
+    code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'SF Mono', Consolas, monospace;
+      font-size: 0.85em;
+    }
+    
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      margin: 1rem 0;
+    }
+    
+    pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+    }
+    
+    .card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 1rem 0;
+    }
+    
+    .card-title {
+      font-weight: 600;
+      color: #0ea5e9;
+      margin-bottom: 8px;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 1rem 0;
+    }
+    
+    .warning {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 12px 16px;
+      margin: 1rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .danger {
+      background: #fee2e2;
+      border-left: 4px solid #ef4444;
+      padding: 12px 16px;
+      margin: 1rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .success {
+      background: #d1fae5;
+      border-left: 4px solid #10b981;
+      padding: 12px 16px;
+      margin: 1rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .toc {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 2rem 0;
+    }
+    
+    .toc h3 { margin-top: 0; }
+    
+    .toc ol {
+      columns: 2;
+      column-gap: 2rem;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge-critical { background: #fee2e2; color: #dc2626; }
+    .badge-high { background: #fef3c7; color: #d97706; }
+    .badge-medium { background: #dbeafe; color: #2563eb; }
+    .badge-low { background: #f1f5f9; color: #64748b; }
+  </style>
+</head>
+<body>
+
+<h1>ReceiptWise</h1>
+<p class="subtitle">AI-Powered Personal Financial Intelligence — Architecture Blueprint</p>
+
+<div class="meta">
+  <strong>Version:</strong> 1.0 &nbsp;|&nbsp; 
+  <strong>Date:</strong> August 2026 &nbsp;|&nbsp;
+  <strong>Status:</strong> Planning Complete
+</div>
+
+<div class="toc">
+  <h3>Table of Contents</h3>
+  <ol>
+    <li>Product Vision</li>
+    <li>Core User Journeys</li>
+    <li>MVP Definition</li>
+    <li>Feature Roadmap</li>
+    <li>Technology Stack</li>
+    <li>System Architecture</li>
+    <li>Database Schema</li>
+    <li>API Architecture</li>
+    <li>AI Architecture</li>
+    <li>Receipt Processing Pipeline</li>
+    <li>Bank/Card Integration</li>
+    <li>Transaction Reconciliation</li>
+    <li>Card Benefits Architecture</li>
+    <li>Notification Architecture</li>
+    <li>Security Architecture</li>
+    <li>Authentication Architecture</li>
+    <li>Frontend Page Structure</li>
+    <li>Component Architecture</li>
+    <li>UX/User Flows</li>
+    <li>Folder/Project Structure</li>
+    <li>Environment Variables</li>
+    <li>Third-Party Services</li>
+    <li>Development Phases</li>
+    <li>Testing Strategy</li>
+    <li>Deployment Architecture</li>
+    <li>Scalability Considerations</li>
+    <li>Privacy/Compliance</li>
+    <li>Technical Risks</li>
+    <li>Financial Data Accuracy Risks</li>
+    <li>AI Hallucination Prevention</li>
+    <li>Duplicate Transaction Prevention</li>
+    <li>Receipt Matching Logic</li>
+    <li>Bank Transaction Matching</li>
+    <li>Notification Generation</li>
+    <li>AI Data Access Safety</li>
+  </ol>
+</div>
+
+<!-- SECTION 1 -->
+<h2>1. Product Vision</h2>
+
+<div class="card">
+  <div class="card-title">Mission Statement</div>
+  <p>Empower users to understand, track, and optimize their spending through intelligent receipt processing and proactive financial insights.</p>
+</div>
+
+<h3>Core Value Proposition</h3>
+<p>Transform passive receipt collection into active financial awareness without the complexity of traditional budgeting apps.</p>
+
+<h3>Target Users</h3>
+<ul>
+  <li>Budget-conscious professionals who want spending visibility</li>
+  <li>Users with multiple credit cards seeking reward optimization</li>
+  <li>Anyone frustrated with manual expense tracking</li>
+  <li>People who keep receipts but never organize them</li>
+</ul>
+
+<h3>Key Differentiators</h3>
+<ul>
+  <li><strong>Receipt-first:</strong> Start from actual purchases, not bank feeds</li>
+  <li><strong>Card-aware:</strong> Understand and optimize credit card rewards</li>
+  <li><strong>Proactive:</strong> Surface insights before users ask</li>
+  <li><strong>Honest AI:</strong> Never hallucinate financial data</li>
+  <li><strong>Privacy-first:</strong> User owns their data</li>
+</ul>
+
+<!-- SECTION 2 -->
+<h2>2. Core User Journeys</h2>
+
+<div class="grid">
+  <div class="card">
+    <div class="card-title">First-Time User</div>
+    <ol>
+      <li>Sign up with email/OAuth</li>
+      <li>Onboarding explains core concept</li>
+      <li>Add credit cards (optional)</li>
+      <li>Set monthly budget (optional)</li>
+      <li>Upload first receipt</li>
+      <li>AI extracts and categorizes</li>
+      <li>Confirm/edit extraction</li>
+      <li>Dashboard shows transaction</li>
+      <li>Receive welcome insight</li>
+    </ol>
+  </div>
+  <div class="card">
+    <div class="card-title">Daily Receipt Upload</div>
+    <ol>
+      <li>Take photo or upload PDF</li>
+      <li>AI processes (&lt;5 seconds)</li>
+      <li>Preview with confidence indicators</li>
+      <li>Confirm or edit details</li>
+      <li>Transaction saved and categorized</li>
+      <li>Dashboard updates real-time</li>
+      <li>Insight generated if significant</li>
+    </ol>
+  </div>
+</div>
+
+<!-- SECTION 3-4 -->
+<h2>3-4. MVP Definition & Feature Roadmap</h2>
+
+<h3>MVP (V1) — Core Receipt-to-Insight Flow</h3>
+<table>
+  <tr><th>Feature</th><th>Priority</th></tr>
+  <tr><td>User authentication (email + OAuth)</td><td><span class="badge badge-critical">Critical</span></td></tr>
+  <tr><td>Receipt upload (photo + PDF)</td><td><span class="badge badge-critical">Critical</span></td></tr>
+  <tr><td>AI receipt extraction with OCR</td><td><span class="badge badge-critical">Critical</span></td></tr>
+  <tr><td>Extraction preview and editing</td><td><span class="badge badge-critical">Critical</span></td></tr>
+  <tr><td>Transaction storage and history</td><td><span class="badge badge-critical">Critical</span></td></tr>
+  <tr><td>Basic categorization (15-20 categories)</td><td><span class="badge badge-critical">Critical</span></td></tr>
+  <tr><td>Financial dashboard with key metrics</td><td><span class="badge badge-critical">Critical</span></td></tr>
+  <tr><td>Spending by category visualization</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td>AI assistant with basic queries</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td>Manual payment method management</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td>Basic budget setting</td><td><span class="badge badge-medium">Medium</span></td></tr>
+  <tr><td>Simple in-app notifications</td><td><span class="badge badge-medium">Medium</span></td></tr>
+</table>
+
+<h3>V2 — Card Benefits & Advanced Analytics</h3>
+<ul>
+  <li>Credit card benefits database</li>
+  <li>Card recommendation engine</li>
+  <li>Advanced spending analytics</li>
+  <li>Recurring expense detection</li>
+  <li>Budget alerts and progress tracking</li>
+  <li>Email and push notifications</li>
+  <li>Transaction item-level tracking</li>
+</ul>
+
+<h3>V3 — Bank Integration & Reconciliation</h3>
+<ul>
+  <li>Plaid bank account integration</li>
+  <li>Credit card transaction sync</li>
+  <li>Receipt-to-bank transaction matching</li>
+  <li>Subscription management</li>
+  <li>Bill reminders and savings goals</li>
+  <li>Cash flow forecasting</li>
+  <li>Mobile app (React Native)</li>
+</ul>
+
+<div class="page-break"></div>
+
+<!-- SECTION 5 -->
+<h2>5. Recommended Technology Stack</h2>
+
+<table>
+  <tr><th>Layer</th><th>Technology</th><th>Rationale</th></tr>
+  <tr><td>Frontend</td><td>Next.js 14+</td><td>App Router, Server Components, excellent DX</td></tr>
+  <tr><td>Frontend</td><td>React 18+</td><td>Industry standard, concurrent features</td></tr>
+  <tr><td>Frontend</td><td>TypeScript</td><td>Type safety essential for financial data</td></tr>
+  <tr><td>Frontend</td><td>Tailwind CSS</td><td>Rapid UI development, consistent design</td></tr>
+  <tr><td>Frontend</td><td>shadcn/ui</td><td>Accessible, customizable components</td></tr>
+  <tr><td>Frontend</td><td>TanStack Query</td><td>Server state, caching, optimistic updates</td></tr>
+  <tr><td>Backend</td><td>Next.js API Routes</td><td>Unified codebase, simpler deployment</td></tr>
+  <tr><td>Backend</td><td>Zod</td><td>Runtime validation, schema-first</td></tr>
+  <tr><td>Database</td><td>PostgreSQL</td><td>ACID compliance for financial data</td></tr>
+  <tr><td>Database</td><td>Prisma</td><td>Type-safe ORM, migrations, excellent DX</td></tr>
+  <tr><td>AI</td><td>OpenAI GPT-4o</td><td>Vision for receipts, function calling</td></tr>
+  <tr><td>AI</td><td>Vercel AI SDK</td><td>Streaming, tool calling, provider abstraction</td></tr>
+  <tr><td>Storage</td><td>Cloudflare R2</td><td>S3-compatible, no egress fees</td></tr>
+  <tr><td>Auth</td><td>NextAuth.js v5</td><td>Flexible, multiple providers, sessions</td></tr>
+  <tr><td>Deployment</td><td>Vercel</td><td>Optimal Next.js hosting, edge functions</td></tr>
+</table>
+
+<!-- SECTION 6 -->
+<h2>6. System Architecture</h2>
+
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                         CLIENT LAYER                            │
+│                    Next.js (React + TypeScript)                 │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │
+          ┌───────────────┴───────────────┐
+          ▼                               ▼
+┌─────────────────────┐         ┌─────────────────────┐
+│    AUTH LAYER       │         │    API LAYER        │
+│   NextAuth.js v5    │         │  Next.js API Routes │
+└─────────┬───────────┘         └──────────┬──────────┘
+          │                                │
+          │         ┌──────────────────────┼──────────────────────┐
+          │         ▼                      ▼                      ▼
+          │  ┌─────────────┐       ┌─────────────┐       ┌─────────────┐
+          │  │ AI SERVICES │       │  STORAGE    │       │  DATABASE   │
+          │  │  OpenAI     │       │  S3/R2      │       │ PostgreSQL  │
+          │  │  GPT-4o     │       │  Receipts   │       │   Prisma    │
+          │  └─────────────┘       └─────────────┘       └─────────────┘
+          │
+          └──────────────────────────────────────────────────────────────┐
+                                                                         │
+                                                              ┌──────────▼──────────┐
+                                                              │   EXTERNAL APIS     │
+                                                              │   Plaid (V3)        │
+                                                              │   Email (Resend)    │
+                                                              └─────────────────────┘
+</code></pre>
+
+<!-- SECTION 7 -->
+<h2>7. Database Schema</h2>
+
+<table>
+  <tr><th>Table</th><th>Description</th><th>Key Fields</th></tr>
+  <tr><td><code>users</code></td><td>Core user accounts</td><td>id, email, password_hash, monthly_budget</td></tr>
+  <tr><td><code>financial_accounts</code></td><td>Bank accounts, credit cards</td><td>user_id, account_type, institution_name, last_four_digits</td></tr>
+  <tr><td><code>card_benefits</code></td><td>Credit card rewards</td><td>financial_account_id, category, reward_rate, benefit_source</td></tr>
+  <tr><td><code>categories</code></td><td>Transaction categories</td><td>name, icon, color, is_system</td></tr>
+  <tr><td><code>receipts</code></td><td>Uploaded receipt images</td><td>user_id, storage_key, processing_status, raw_extraction</td></tr>
+  <tr><td><code>transactions</code></td><td>Core transaction records</td><td>user_id, merchant_name, total_amount, category_id, receipt_id</td></tr>
+  <tr><td><code>transaction_items</code></td><td>Line items from receipts</td><td>transaction_id, description, quantity, total_price</td></tr>
+  <tr><td><code>budgets</code></td><td>User budget settings</td><td>user_id, category_id, period_type, amount</td></tr>
+  <tr><td><code>notifications</code></td><td>Generated notifications</td><td>user_id, notification_type, title, message, is_read</td></tr>
+  <tr><td><code>ai_insights</code></td><td>AI-generated insights</td><td>user_id, insight_type, content, confidence_score</td></tr>
+  <tr><td><code>audit_logs</code></td><td>Security audit trail</td><td>user_id, action, entity_type, old_values, new_values</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<!-- SECTION 8 -->
+<h2>8. API Architecture</h2>
+
+<table>
+  <tr><th>Category</th><th>Endpoints</th><th>Methods</th></tr>
+  <tr><td>Authentication</td><td>/api/auth/*</td><td>POST /register, /login, /logout, GET /session</td></tr>
+  <tr><td>Receipts</td><td>/api/receipts/*</td><td>POST /upload, GET list, GET /:id, DELETE /:id</td></tr>
+  <tr><td>Transactions</td><td>/api/transactions/*</td><td>POST, GET, PATCH /:id, DELETE /:id</td></tr>
+  <tr><td>Accounts</td><td>/api/accounts/*</td><td>POST, GET, PATCH /:id, DELETE /:id</td></tr>
+  <tr><td>Analytics</td><td>/api/analytics/*</td><td>GET /spending, /categories, /trends, /budgets</td></tr>
+  <tr><td>AI Assistant</td><td>/api/ai/*</td><td>POST /chat, GET /insights</td></tr>
+  <tr><td>Notifications</td><td>/api/notifications/*</td><td>GET list, PATCH /:id/read, PATCH /read-all</td></tr>
+</table>
+
+<!-- SECTION 9 -->
+<h2>9. AI Architecture</h2>
+
+<div class="warning">
+  <strong>Design Principle:</strong> Separate AI modules for separate tasks. NO single "god prompt" controlling everything.
+</div>
+
+<table>
+  <tr><th>Module</th><th>Model</th><th>Purpose</th><th>Structured Output</th></tr>
+  <tr><td>Receipt Extraction</td><td>GPT-4o (vision)</td><td>Extract data from receipt images</td><td>Yes</td></tr>
+  <tr><td>Transaction Categorizer</td><td>GPT-4o-mini</td><td>Classify transactions into categories</td><td>Yes</td></tr>
+  <tr><td>Payment Method Matcher</td><td>GPT-4o-mini</td><td>Match receipt to user's cards</td><td>Yes</td></tr>
+  <tr><td>Financial Assistant</td><td>GPT-4o</td><td>Answer questions using tool calls</td><td>No</td></tr>
+  <tr><td>Insight Generator</td><td>GPT-4o-mini</td><td>Generate proactive insights</td><td>Yes</td></tr>
+  <tr><td>Notification Composer</td><td>GPT-4o-mini</td><td>Create notification messages</td><td>Yes</td></tr>
+  <tr><td>Card Benefit Reasoner</td><td>GPT-4o-mini</td><td>Recommend cards based on VERIFIED benefits</td><td>Yes</td></tr>
+</table>
+
+<h3>AI Assistant Tools (Function Calling)</h3>
+<ul>
+  <li><code>get_transactions(filters)</code> — Query transactions with date, category, merchant filters</li>
+  <li><code>get_spending_summary(period)</code> — Total spending for today/week/month</li>
+  <li><code>get_spending_by_category(period)</code> — Breakdown by category</li>
+  <li><code>get_budget_status()</code> — Current budget vs actual</li>
+  <li><code>get_card_benefits()</code> — Verified benefits for user's cards</li>
+  <li><code>get_recurring_transactions()</code> — Detected recurring expenses</li>
+  <li><code>compare_spending_periods(period1, period2)</code> — Compare two time periods</li>
+  <li><code>get_merchant_history(merchant)</code> — History for specific merchant</li>
+  <li><code>search_transactions(query)</code> — Full-text search</li>
+</ul>
+
+<!-- SECTION 10 -->
+<h2>10. Receipt Processing Pipeline</h2>
+
+<pre><code>1. UPLOAD        → User uploads image/PDF
+2. VALIDATE      → Check file type, size (&lt;10MB)
+3. STORE         → Upload to S3 with signed URL
+4. OCR + EXTRACT → GPT-4o vision extracts all fields
+5. CATEGORIZE    → AI categorizes transaction
+6. MATCH PAYMENT → AI matches to user's cards (or asks)
+7. PREVIEW       → Show extraction with confidence scores
+8. USER CONFIRM  → User reviews/edits before saving
+9. SAVE          → Transaction saved to database
+10. INSIGHT      → Generate insight if significant
+</code></pre>
+
+<div class="page-break"></div>
+
+<!-- SECTION 11-13 -->
+<h2>11-13. Bank Integration & Reconciliation (V3)</h2>
+
+<div class="warning">
+  <strong>Note:</strong> Bank integration is V3 functionality. MVP uses manual receipt upload only.
+</div>
+
+<h3>Integration Architecture</h3>
+<ul>
+  <li>Use Plaid Link for secure bank connection</li>
+  <li>Store Plaid access tokens encrypted (never in frontend)</li>
+  <li>Sync transactions via webhook or daily pull</li>
+  <li>Map Plaid categories to internal categories</li>
+  <li>Handle token refresh automatically</li>
+</ul>
+
+<h3>Transaction Reconciliation Strategy</h3>
+<ul>
+  <li><strong>Match by:</strong> Amount (exact) + Date (±1 day) + Merchant (fuzzy)</li>
+  <li><strong>3/3 match:</strong> Auto-link receipt to bank transaction</li>
+  <li><strong>2/3 match:</strong> Suggest to user for confirmation</li>
+  <li><strong>1/3 match:</strong> Ignore, log for manual review</li>
+  <li>Never delete receipt data when bank transaction found</li>
+  <li>Mark reconciled transactions to prevent re-matching</li>
+</ul>
+
+<!-- SECTION 14 -->
+<h2>14. Card Benefits Architecture</h2>
+
+<div class="grid">
+  <div class="card">
+    <div class="card-title">Verified Benefits</div>
+    <p>From official card databases or APIs. Used for recommendations with high confidence.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">User-Entered Benefits</div>
+    <p>Manually entered by user. Used for recommendations with clear attribution.</p>
+  </div>
+</div>
+
+<div class="danger">
+  <strong>CRITICAL RULE:</strong> The system will NEVER claim a card provides a specific benefit unless that benefit is in the verified database or user-entered. AI suggestions are clearly labeled and NOT used for recommendations.
+</div>
+
+<!-- SECTION 15 -->
+<h2>15. Notification Architecture</h2>
+
+<h3>Notification Types</h3>
+<ul>
+  <li><strong>Spending Alert:</strong> Above daily/weekly average</li>
+  <li><strong>Budget Warning:</strong> Approaching or exceeding budget</li>
+  <li><strong>Insight:</strong> Pattern detected, recommendation</li>
+  <li><strong>System:</strong> Account, security, features</li>
+</ul>
+
+<h3>Delivery Rules</h3>
+<ul>
+  <li>Max 3 notifications per day (excluding system)</li>
+  <li>Deduplicate similar insights within 24 hours</li>
+  <li>Prioritize actionable over informational</li>
+  <li>User can snooze notification types</li>
+  <li>Channels: in-app (always), email, push (V2)</li>
+</ul>
+
+<!-- SECTION 16 -->
+<h2>16. Security Architecture</h2>
+
+<h3>Authentication & Authorization</h3>
+<ul>
+  <li>JWT tokens in HTTP-only, Secure, SameSite=Strict cookies</li>
+  <li>Password hashing with bcrypt (cost factor 12+)</li>
+  <li>Email verification for sensitive operations</li>
+  <li>Session timeout: 7 days inactive, 30 days absolute</li>
+  <li>Rate limiting on auth endpoints (5 attempts/15 min)</li>
+  <li>OAuth 2.0 with PKCE for social login</li>
+</ul>
+
+<h3>Data Protection</h3>
+<ul>
+  <li>TLS 1.3 for all connections (HTTPS only)</li>
+  <li>Database encryption at rest (AES-256)</li>
+  <li>Receipt images encrypted at rest in S3</li>
+  <li>Signed URLs with short expiration (15 min)</li>
+  <li>Financial tokens never exposed to frontend</li>
+</ul>
+
+<h3>API Security</h3>
+<ul>
+  <li>Input validation with Zod on all endpoints</li>
+  <li>Rate limiting: 100 req/min general, 10 req/min AI</li>
+  <li>CORS restricted to known origins</li>
+  <li>CSRF protection with double-submit cookie</li>
+  <li>Request size limits (10MB for receipts)</li>
+  <li>SQL injection prevention via Prisma ORM</li>
+</ul>
+
+<h3>Compliance Considerations</h3>
+<ul>
+  <li><strong>GDPR:</strong> Data deletion, export, consent management</li>
+  <li><strong>CCPA:</strong> Similar privacy rights for California</li>
+  <li><strong>PCI DSS:</strong> Not storing card numbers (only last 4)</li>
+  <li><strong>SOC 2:</strong> Audit logging, access controls, encryption</li>
+</ul>
+
+<div class="page-break"></div>
+
+<!-- SECTION 17-20 -->
+<h2>17-20. Frontend Architecture</h2>
+
+<h3>Page Structure</h3>
+<table>
+  <tr><th>Route</th><th>Page</th><th>Auth Required</th></tr>
+  <tr><td><code>/</code></td><td>Landing Page</td><td>No</td></tr>
+  <tr><td><code>/login</code></td><td>Login</td><td>No</td></tr>
+  <tr><td><code>/register</code></td><td>Register</td><td>No</td></tr>
+  <tr><td><code>/dashboard</code></td><td>Dashboard</td><td>Yes</td></tr>
+  <tr><td><code>/receipts</code></td><td>Receipts List</td><td>Yes</td></tr>
+  <tr><td><code>/receipts/upload</code></td><td>Upload Receipt</td><td>Yes</td></tr>
+  <tr><td><code>/transactions</code></td><td>Transactions</td><td>Yes</td></tr>
+  <tr><td><code>/accounts</code></td><td>Financial Accounts</td><td>Yes</td></tr>
+  <tr><td><code>/analytics</code></td><td>Analytics</td><td>Yes</td></tr>
+  <tr><td><code>/assistant</code></td><td>AI Assistant</td><td>Yes</td></tr>
+  <tr><td><code>/settings</code></td><td>Settings</td><td>Yes</td></tr>
+</table>
+
+<h3>Folder Structure</h3>
+<pre><code>src/
+├── app/                    # Next.js App Router
+│   ├── (auth)/            # Auth pages (login, register)
+│   ├── (dashboard)/       # Protected dashboard pages
+│   └── api/               # API routes
+├── components/
+│   ├── ui/                # shadcn/ui components
+│   ├── dashboard/         # Dashboard components
+│   ├── receipts/          # Receipt components
+│   └── layout/            # Layout components
+├── lib/
+│   ├── ai/                # AI modules
+│   ├── db/                # Database utilities
+│   └── auth/              # Auth utilities
+├── hooks/                 # React hooks
+└── types/                 # TypeScript types
+</code></pre>
+
+<!-- SECTION 21-22 -->
+<h2>21-22. Environment Variables & Third-Party Services</h2>
+
+<h3>Environment Variables</h3>
+<table>
+  <tr><th>Variable</th><th>Description</th><th>Sensitive</th></tr>
+  <tr><td><code>DATABASE_URL</code></td><td>PostgreSQL connection string</td><td>Yes</td></tr>
+  <tr><td><code>NEXTAUTH_SECRET</code></td><td>NextAuth.js secret key</td><td>Yes</td></tr>
+  <tr><td><code>NEXTAUTH_URL</code></td><td>Application URL</td><td>No</td></tr>
+  <tr><td><code>OPENAI_API_KEY</code></td><td>OpenAI API key</td><td>Yes</td></tr>
+  <tr><td><code>AWS_ACCESS_KEY_ID</code></td><td>S3/R2 credentials</td><td>Yes</td></tr>
+  <tr><td><code>AWS_SECRET_ACCESS_KEY</code></td><td>S3/R2 credentials</td><td>Yes</td></tr>
+  <tr><td><code>AWS_S3_BUCKET</code></td><td>Bucket name</td><td>No</td></tr>
+  <tr><td><code>GOOGLE_CLIENT_ID</code></td><td>Google OAuth</td><td>Yes</td></tr>
+  <tr><td><code>PLAID_CLIENT_ID</code></td><td>Plaid (V3)</td><td>Yes</td></tr>
+  <tr><td><code>RESEND_API_KEY</code></td><td>Email service</td><td>Yes</td></tr>
+</table>
+
+<h3>Third-Party Services</h3>
+<ul>
+  <li><strong>OpenAI:</strong> GPT-4o vision, GPT-4o-mini for AI features</li>
+  <li><strong>Vercel:</strong> Hosting, edge functions, analytics</li>
+  <li><strong>Neon/Supabase:</strong> Managed PostgreSQL</li>
+  <li><strong>Cloudflare R2:</strong> Receipt image storage (no egress fees)</li>
+  <li><strong>Resend:</strong> Transactional email</li>
+  <li><strong>Sentry:</strong> Error tracking and monitoring</li>
+  <li><strong>Plaid (V3):</strong> Bank account connection</li>
+</ul>
+
+<div class="page-break"></div>
+
+<!-- SECTION 23 -->
+<h2>23. Development Phases</h2>
+
+<table>
+  <tr><th>Phase</th><th>Focus</th><th>Deliverable</th></tr>
+  <tr>
+    <td><strong>Phase 1: Foundation</strong></td>
+    <td>Auth, Database, Dashboard Shell</td>
+    <td>User can sign up, log in, see empty dashboard</td>
+  </tr>
+  <tr>
+    <td><strong>Phase 2: Receipt Processing</strong></td>
+    <td>Upload, AI Extraction, Transactions</td>
+    <td>User can upload receipt, see AI extraction, save transaction</td>
+  </tr>
+  <tr>
+    <td><strong>Phase 3: Dashboard & Analytics</strong></td>
+    <td>Charts, Budgets, Visualizations</td>
+    <td>User sees comprehensive financial dashboard</td>
+  </tr>
+  <tr>
+    <td><strong>Phase 4: AI Assistant</strong></td>
+    <td>Chat, Tool Calling, Conversations</td>
+    <td>User can ask questions and get accurate answers</td>
+  </tr>
+  <tr>
+    <td><strong>Phase 5: Notifications</strong></td>
+    <td>Alerts, Insights, Email</td>
+    <td>User receives proactive financial insights</td>
+  </tr>
+  <tr>
+    <td><strong>Phase 6: Payment Methods</strong></td>
+    <td>Card Matching, Benefits</td>
+    <td>Transactions linked to correct payment methods</td>
+  </tr>
+</table>
+
+<!-- SECTION 24-25 -->
+<h2>24-25. Testing & Deployment</h2>
+
+<h3>Testing Strategy</h3>
+<table>
+  <tr><th>Type</th><th>Tools</th><th>Coverage</th></tr>
+  <tr><td>Unit Tests</td><td>Vitest, React Testing Library</td><td>Functions, components, validation</td></tr>
+  <tr><td>Integration Tests</td><td>Vitest, test database</td><td>API routes, database queries</td></tr>
+  <tr><td>E2E Tests</td><td>Playwright</td><td>Complete user flows</td></tr>
+  <tr><td>AI Testing</td><td>Golden datasets</td><td>Receipt extraction accuracy</td></tr>
+  <tr><td>Security Testing</td><td>OWASP ZAP</td><td>Auth, injection, IDOR</td></tr>
+</table>
+
+<h3>Deployment Architecture</h3>
+<ul>
+  <li>Vercel for Next.js (automatic deployments from main)</li>
+  <li>Neon PostgreSQL (connection pooling, auto-scaling)</li>
+  <li>Cloudflare R2 for receipt storage</li>
+  <li>Preview deployments for every PR</li>
+  <li>Database migrations run in CI before deployment</li>
+</ul>
+
+<!-- SECTION 26-28 -->
+<h2>26-28. Scalability, Privacy & Technical Risks</h2>
+
+<h3>Technical Risks</h3>
+<table>
+  <tr><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Mitigation</th></tr>
+  <tr><td>OCR accuracy on poor receipts</td><td>High</td><td>Medium</td><td>GPT-4o vision, quality feedback, manual editing</td></tr>
+  <tr><td>AI hallucinating financial data</td><td>Medium</td><td>Critical</td><td>Tool-based access, structured outputs, user confirmation</td></tr>
+  <tr><td>Payment method mismatching</td><td>Medium</td><td>High</td><td>Confidence thresholds, always ask when uncertain</td></tr>
+  <tr><td>Duplicate transactions</td><td>Medium</td><td>Medium</td><td>Fuzzy matching, user confirmation, reconciliation</td></tr>
+  <tr><td>OpenAI API costs</td><td>Medium</td><td>Medium</td><td>Use mini models, caching, rate limiting per user</td></tr>
+  <tr><td>Security breach</td><td>Low</td><td>Critical</td><td>Encryption, audit logs, penetration testing</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<!-- SECTION 29-30 -->
+<h2>29-30. AI Hallucination Prevention</h2>
+
+<div class="danger">
+  <strong>CRITICAL:</strong> Financial applications have ZERO tolerance for AI hallucinations. These strategies are mandatory.
+</div>
+
+<table>
+  <tr><th>Strategy</th><th>Description</th></tr>
+  <tr><td><strong>Tool-Based Data Access</strong></td><td>AI MUST use function tools to access financial data. Never answer from "memory".</td></tr>
+  <tr><td><strong>Structured Outputs</strong></td><td>Use OpenAI structured outputs with JSON schemas for all extraction tasks.</td></tr>
+  <tr><td><strong>Confidence Scores</strong></td><td>Every AI extraction includes confidence score. Low confidence triggers user review.</td></tr>
+  <tr><td><strong>Source Attribution</strong></td><td>AI responses reference specific transactions, dates, and amounts from database.</td></tr>
+  <tr><td><strong>Explicit Unknowns</strong></td><td>AI must say "I don't have that information" rather than guessing.</td></tr>
+  <tr><td><strong>User Confirmation</strong></td><td>All AI extractions shown to user before saving. User can edit any field.</td></tr>
+  <tr><td><strong>Module Separation</strong></td><td>Separate AI modules for separate tasks. No single "god prompt".</td></tr>
+</table>
+
+<!-- SECTION 31-32 -->
+<h2>31-32. Receipt & Payment Method Matching</h2>
+
+<h3>Payment Method Matching Flow</h3>
+<ol>
+  <li><strong>Extract Payment Info:</strong> AI extracts payment text from receipt (card type, last 4 digits)</li>
+  <li><strong>High Confidence Match:</strong> Last 4 digits AND card network match → auto-assign</li>
+  <li><strong>Medium Confidence Match:</strong> Only card network matches one card → ask user</li>
+  <li><strong>Low Confidence Match:</strong> Generic card type with multiple options → user must choose</li>
+  <li><strong>No Match:</strong> No payment info or no cards registered → ask user to select or skip</li>
+</ol>
+
+<div class="danger">
+  <strong>CRITICAL RULES:</strong>
+  <ul>
+    <li>NEVER silently assign a payment method without sufficient evidence</li>
+    <li>NEVER make up payment method information</li>
+    <li>When in doubt, ASK THE USER</li>
+    <li>Store confidence level with transaction for future reference</li>
+  </ul>
+</div>
+
+<!-- SECTION 33-35 -->
+<h2>33-35. Bank Matching, Notifications & AI Data Access</h2>
+
+<h3>Bank Transaction Matching (V3)</h3>
+<ol>
+  <li>Get bank transaction from Plaid</li>
+  <li>Search receipts: amount (exact) + date (±2 days) + merchant (fuzzy)</li>
+  <li>Score: 3/3 = auto-link, 2/3 = suggest, 1/3 = log for manual</li>
+  <li>Mark both as reconciled to prevent re-matching</li>
+  <li>Keep receipt data even if bank transaction exists (receipts have more detail)</li>
+</ol>
+
+<h3>Notification Generation</h3>
+<ol>
+  <li>Event triggers notification check (transaction save, scheduled job)</li>
+  <li>Query relevant data (spending, budgets, patterns)</li>
+  <li>AI generates user-friendly message (structured output)</li>
+  <li>Check user preferences and rate limits</li>
+  <li>Save notification and dispatch to channels</li>
+</ol>
+
+<h3>AI Data Access (Secure)</h3>
+<div class="success">
+  The AI assistant NEVER has direct database access. All data retrieval happens through typed, validated tool functions with user_id filtering.
+</div>
+
+<ol>
+  <li>User asks question in chat</li>
+  <li>AI determines which tool(s) to call</li>
+  <li>Tool functions validate user ownership</li>
+  <li>Query executes with user_id filter (always)</li>
+  <li>Results returned to AI as structured data</li>
+  <li>AI formulates response citing actual data</li>
+  <li>Response includes source attribution</li>
+</ol>
+
+<hr style="margin: 3rem 0;">
+
+<div class="card" style="text-align: center;">
+  <div class="card-title">Ready to Build?</div>
+  <p>This blueprint covers all 35 architectural items. Follow the implementation phases to build ReceiptWise incrementally, with each phase producing a working, demonstrable feature.</p>
+  <p style="margin-top: 1rem; color: #64748b; font-size: 0.9rem;">
+    Built with Next.js 14 • TypeScript • PostgreSQL • OpenAI GPT-4o
+  </p>
+</div>
+
+</body>
+</html>

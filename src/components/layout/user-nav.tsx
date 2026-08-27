@@ -1,6 +1,9 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,14 +12,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, Settings, LogOut } from "lucide-react";
-import Link from "next/link";
 
 export function UserNav() {
   const { data: session } = useSession();
 
-  if (!session?.user) return null;
+  if (!session?.user) {
+    return null;
+  }
 
   const initials = session.user.name
     ?.split(" ")
@@ -27,42 +30,46 @@ export function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-900">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={session.user.image || undefined} alt={session.user.name || ""} />
-            <AvatarFallback className="bg-sky-500/10 text-sky-400 text-sm">
+        <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-gray-100">
+          <Avatar className="h-9 w-9 border border-gray-200">
+            <AvatarImage src={session.user.image || ""} alt={session.user.name || ""} />
+            <AvatarFallback className="bg-red-500 text-white text-sm font-medium">
               {initials}
             </AvatarFallback>
           </Avatar>
-        </button>
+        </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 bg-slate-900 border-slate-800">
+      <DropdownMenuContent 
+        className="w-56 bg-white border-gray-200" 
+        align="end" 
+        forceMount
+      >
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium text-slate-100">{session.user.name}</p>
-            <p className="text-xs text-slate-400">{session.user.email}</p>
+            <p className="text-sm font-medium text-gray-900">{session.user.name}</p>
+            <p className="text-xs text-gray-500">{session.user.email}</p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator className="bg-slate-800" />
-        <DropdownMenuItem asChild>
-          <Link href="/settings" className="flex items-center gap-2 cursor-pointer text-slate-300 focus:bg-slate-800 focus:text-slate-100">
-            <User className="h-4 w-4" />
+        <DropdownMenuSeparator className="bg-gray-100" />
+        <DropdownMenuItem asChild className="text-gray-600 focus:text-gray-900 focus:bg-gray-100 cursor-pointer">
+          <Link href="/settings" className="flex items-center">
+            <User className="mr-2 h-4 w-4" />
             Profile
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/settings" className="flex items-center gap-2 cursor-pointer text-slate-300 focus:bg-slate-800 focus:text-slate-100">
-            <Settings className="h-4 w-4" />
+        <DropdownMenuItem asChild className="text-gray-600 focus:text-gray-900 focus:bg-gray-100 cursor-pointer">
+          <Link href="/settings" className="flex items-center">
+            <Settings className="mr-2 h-4 w-4" />
             Settings
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuSeparator className="bg-slate-800" />
-        <DropdownMenuItem
+        <DropdownMenuSeparator className="bg-gray-100" />
+        <DropdownMenuItem 
           onClick={() => signOut({ callbackUrl: "/" })}
-          className="flex items-center gap-2 cursor-pointer text-rose-400 focus:bg-slate-800 focus:text-rose-300"
+          className="text-gray-600 focus:text-gray-900 focus:bg-gray-100 cursor-pointer"
         >
-          <LogOut className="h-4 w-4" />
-          Sign out
+          <LogOut className="mr-2 h-4 w-4" />
+          Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
