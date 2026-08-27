@@ -28,12 +28,11 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800">
-      <div className="flex h-16 items-center gap-2 px-6 border-b border-slate-800">
-        <Wallet className="h-8 w-8 text-sky-400" />
-        <span className="text-xl font-bold">
-          <span className="text-sky-400">Receipt</span>
-          <span className="text-slate-100">Wise</span>
+    <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200">
+      <div className="flex h-16 items-center gap-2 px-6 border-b border-gray-200">
+        <Wallet className="h-8 w-8 text-red-500" />
+        <span className="text-xl font-bold text-gray-900">
+          ReceiptWise
         </span>
       </div>
 
@@ -47,8 +46,8 @@ export function Sidebar() {
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-sky-500/10 text-sky-400"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+                  ? "bg-red-500 text-white"
+                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               )}
             >
               <item.icon className="h-5 w-5" />
@@ -58,12 +57,12 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-800">
-        <div className="rounded-lg bg-slate-800/50 p-4">
-          <p className="text-xs text-slate-400 mb-2">Quick Actions</p>
+      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
+        <div className="rounded-xl bg-gray-50 p-4">
+          <p className="text-xs text-gray-500 mb-3">Quick Actions</p>
           <Link
             href="/receipts/upload"
-            className="flex items-center justify-center gap-2 w-full rounded-lg bg-sky-500 hover:bg-sky-600 text-white px-4 py-2.5 text-sm font-medium transition-colors"
+            className="flex items-center justify-center gap-2 w-full rounded-full bg-red-500 hover:bg-red-600 text-white px-4 py-2.5 text-sm font-medium transition-colors"
           >
             <Receipt className="h-4 w-4" />
             Upload Receipt

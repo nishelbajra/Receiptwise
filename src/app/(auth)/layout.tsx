@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { Wallet } from "lucide-react";
 import Link from "next/link";
+import { Wallet } from "lucide-react";
 
 export default async function AuthLayout({
   children,
@@ -15,26 +15,26 @@ export default async function AuthLayout({
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
-      {/* Header */}
-      <header className="p-4">
-        <Link href="/" className="inline-flex items-center gap-2">
-          <Wallet className="h-8 w-8 text-sky-400" />
-          <span className="text-xl font-bold">
-            <span className="text-sky-400">Receipt</span>
-            <span className="text-slate-100">Wise</span>
-          </span>
-        </Link>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <header className="border-b border-gray-100 bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-4">
+          <Link href="/" className="flex items-center gap-2 w-fit">
+            <Wallet className="h-8 w-8 text-red-500" />
+            <span className="text-xl font-bold text-gray-900">
+              ReceiptWise
+            </span>
+          </Link>
+        </div>
       </header>
 
-      {/* Content */}
       <main className="flex-1 flex items-center justify-center p-4">
         {children}
       </main>
 
-      {/* Footer */}
-      <footer className="p-4 text-center text-slate-500 text-sm">
-        &copy; {new Date().getFullYear()} ReceiptWise
+      <footer className="border-t border-gray-100 bg-white py-4">
+        <div className="mx-auto max-w-7xl px-4 text-center text-gray-400 text-sm">
+          <p>&copy; {new Date().getFullYear()} ReceiptWise</p>
+        </div>
       </footer>
     </div>
   );

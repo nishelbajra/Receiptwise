@@ -13,12 +13,12 @@ import { Loader2, UserPlus } from "lucide-react";
 export default function RegisterPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
+    setFormError(null);
 
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
@@ -27,13 +27,13 @@ export default function RegisterPage() {
     const confirmPassword = formData.get("confirmPassword") as string;
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setFormError("Passwords do not match");
       setIsLoading(false);
       return;
     }
 
     if (password.length < 8) {
-      setError("Password must be at least 8 characters");
+      setFormError("Password must be at least 8 characters");
       setIsLoading(false);
       return;
     }
@@ -48,7 +48,7 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Something went wrong");
+        setFormError(data.error || "Registration failed");
         setIsLoading(false);
         return;
       }
@@ -61,35 +61,34 @@ export default function RegisterPage() {
 
       if (result?.error) {
         router.push("/login");
-        return;
+      } else {
+        router.push("/dashboard");
+        router.refresh();
       }
-
-      router.push("/dashboard");
-      router.refresh();
     } catch {
-      setError("Something went wrong. Please try again.");
+      setFormError("Something went wrong. Please try again.");
       setIsLoading(false);
     }
   }
 
   return (
-    <Card className="w-full max-w-md bg-slate-900 border-slate-800">
+    <Card className="w-full max-w-md bg-white border-gray-200 shadow-xl">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-slate-100">Create an account</CardTitle>
-        <CardDescription className="text-slate-400">
-          Enter your details to get started with ReceiptWise
+        <CardTitle className="text-2xl font-bold text-gray-900">Create an account</CardTitle>
+        <CardDescription className="text-gray-500">
+          Get started with ReceiptWise today
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {error && (
-          <div className="rounded-lg bg-rose-500/10 border border-rose-500/20 px-4 py-3 text-sm text-rose-400">
-            {error}
+        {formError && (
+          <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+            {formError}
           </div>
         )}
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-slate-300">Name</Label>
+            <Label htmlFor="name" className="text-gray-700">Name</Label>
             <Input
               id="name"
               name="name"
@@ -97,11 +96,11 @@ export default function RegisterPage() {
               placeholder="John Doe"
               required
               disabled={isLoading}
-              className="bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500"
+              className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-red-500 focus:ring-red-500"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-slate-300">Email</Label>
+            <Label htmlFor="email" className="text-gray-700">Email</Label>
             <Input
               id="email"
               name="email"
@@ -109,38 +108,36 @@ export default function RegisterPage() {
               placeholder="you@example.com"
               required
               disabled={isLoading}
-              className="bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500"
+              className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-red-500 focus:ring-red-500"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-slate-300">Password</Label>
+            <Label htmlFor="password" className="text-gray-700">Password</Label>
             <Input
               id="password"
               name="password"
               type="password"
               placeholder="••••••••"
               required
-              minLength={8}
               disabled={isLoading}
-              className="bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500"
+              className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-red-500 focus:ring-red-500"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-slate-300">Confirm Password</Label>
+            <Label htmlFor="confirmPassword" className="text-gray-700">Confirm Password</Label>
             <Input
               id="confirmPassword"
               name="confirmPassword"
               type="password"
               placeholder="••••••••"
               required
-              minLength={8}
               disabled={isLoading}
-              className="bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500"
+              className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-red-500 focus:ring-red-500"
             />
           </div>
           <Button
             type="submit"
-            className="w-full bg-sky-500 hover:bg-sky-600 text-white"
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-medium rounded-full"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -159,17 +156,17 @@ export default function RegisterPage() {
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-slate-800" />
+            <span className="w-full border-t border-gray-200" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-slate-900 px-2 text-slate-500">Or continue with</span>
+            <span className="bg-white px-2 text-gray-400">Or continue with</span>
           </div>
         </div>
 
         <Button
           variant="outline"
           type="button"
-          className="w-full border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-slate-100"
+          className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-full"
           onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
           disabled={isLoading}
         >
@@ -195,9 +192,9 @@ export default function RegisterPage() {
         </Button>
       </CardContent>
       <CardFooter>
-        <p className="text-center text-sm text-slate-400 w-full">
+        <p className="text-center text-sm text-gray-500 w-full">
           Already have an account?{" "}
-          <Link href="/login" className="text-sky-400 hover:text-sky-300 font-medium">
+          <Link href="/login" className="text-red-500 hover:text-red-600 font-medium">
             Sign in
           </Link>
         </p>

@@ -1,183 +1,124 @@
 import { auth } from "@/lib/auth";
 import { Header } from "@/components/layout/header";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Bell, Shield, Trash2 } from "lucide-react";
 
 export default async function SettingsPage() {
   const session = await auth();
 
   return (
-    <>
+    <div className="bg-gray-50 min-h-screen">
       <Header title="Settings" />
+      
       <div className="p-6 max-w-3xl space-y-6">
         {/* Profile */}
-        <Card className="bg-slate-900 border-slate-800">
+        <Card className="bg-white border-gray-200 shadow-sm">
           <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-sky-500/10 flex items-center justify-center">
-                <User className="h-5 w-5 text-sky-400" />
-              </div>
-              <div>
-                <CardTitle className="text-slate-100">Profile</CardTitle>
-                <CardDescription className="text-slate-400">
-                  Manage your account information
-                </CardDescription>
-              </div>
-            </div>
+            <CardTitle className="flex items-center gap-2 text-gray-900">
+              <User className="h-5 w-5 text-red-500" />
+              Profile
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-slate-300">Name</Label>
-                <Input
-                  id="name"
-                  defaultValue={session?.user?.name || ""}
-                  className="bg-slate-800 border-slate-700 text-slate-100"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-300">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  defaultValue={session?.user?.email || ""}
-                  disabled
-                  className="bg-slate-800 border-slate-700 text-slate-400"
-                />
-              </div>
+            <div className="space-y-2">
+              <label className="text-sm text-gray-600">Name</label>
+              <input
+                type="text"
+                defaultValue={session?.user?.name || ""}
+                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors"
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="budget" className="text-slate-300">Monthly Budget</Label>
-              <Input
-                id="budget"
-                type="number"
-                placeholder="Enter your monthly budget"
-                className="bg-slate-800 border-slate-700 text-slate-100 max-w-xs"
+              <label className="text-sm text-gray-600">Email</label>
+              <input
+                type="email"
+                defaultValue={session?.user?.email || ""}
+                disabled
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-gray-400 cursor-not-allowed"
               />
-              <p className="text-xs text-slate-500">Set a monthly spending limit to track your progress</p>
             </div>
-            <Button className="bg-sky-500 hover:bg-sky-600">Save Changes</Button>
+            <div className="space-y-2">
+              <label className="text-sm text-gray-600">Monthly Budget</label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                <input
+                  type="number"
+                  placeholder="0.00"
+                  className="w-full bg-white border border-gray-300 rounded-lg pl-8 pr-4 py-2.5 text-gray-900 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors"
+                />
+              </div>
+            </div>
+            <button className="rounded-full bg-red-500 hover:bg-red-600 text-white px-6 py-2.5 font-medium transition-colors">
+              Save Changes
+            </button>
           </CardContent>
         </Card>
 
         {/* Notifications */}
-        <Card className="bg-slate-900 border-slate-800">
+        <Card className="bg-white border-gray-200 shadow-sm">
           <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-violet-500/10 flex items-center justify-center">
-                <Bell className="h-5 w-5 text-violet-400" />
-              </div>
-              <div>
-                <CardTitle className="text-slate-100">Notifications</CardTitle>
-                <CardDescription className="text-slate-400">
-                  Configure how you receive alerts
-                </CardDescription>
-              </div>
-            </div>
+            <CardTitle className="flex items-center gap-2 text-gray-900">
+              <Bell className="h-5 w-5 text-red-500" />
+              Notifications
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-200">Spending Alerts</p>
-                <p className="text-xs text-slate-500">Get notified when spending exceeds your average</p>
+            {[
+              { label: "Spending alerts", description: "Get notified when spending is above average" },
+              { label: "Budget warnings", description: "Alert when approaching budget limit" },
+              { label: "Weekly summary", description: "Receive weekly spending summary email" },
+            ].map((item, index) => (
+              <div key={index} className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-900 font-medium">{item.label}</p>
+                  <p className="text-sm text-gray-500">{item.description}</p>
+                </div>
+                <button className="w-12 h-6 rounded-full bg-gray-200 relative transition-colors hover:bg-gray-300">
+                  <span className="absolute left-1 top-1 w-4 h-4 rounded-full bg-white shadow transition-transform" />
+                </button>
               </div>
-              <Button variant="outline" size="sm" className="border-slate-700 text-slate-300">
-                Enable
-              </Button>
-            </div>
-            <Separator className="bg-slate-800" />
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-200">Budget Warnings</p>
-                <p className="text-xs text-slate-500">Alert when approaching budget limits</p>
-              </div>
-              <Button variant="outline" size="sm" className="border-slate-700 text-slate-300">
-                Enable
-              </Button>
-            </div>
-            <Separator className="bg-slate-800" />
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-200">Weekly Summary</p>
-                <p className="text-xs text-slate-500">Receive a weekly spending summary email</p>
-              </div>
-              <Button variant="outline" size="sm" className="border-slate-700 text-slate-300">
-                Enable
-              </Button>
-            </div>
+            ))}
           </CardContent>
         </Card>
 
         {/* Security */}
-        <Card className="bg-slate-900 border-slate-800">
+        <Card className="bg-white border-gray-200 shadow-sm">
           <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                <Shield className="h-5 w-5 text-emerald-400" />
-              </div>
-              <div>
-                <CardTitle className="text-slate-100">Security</CardTitle>
-                <CardDescription className="text-slate-400">
-                  Manage your security settings
-                </CardDescription>
-              </div>
-            </div>
+            <CardTitle className="flex items-center gap-2 text-gray-900">
+              <Shield className="h-5 w-5 text-red-500" />
+              Security
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-200">Change Password</p>
-                <p className="text-xs text-slate-500">Update your account password</p>
-              </div>
-              <Button variant="outline" size="sm" className="border-slate-700 text-slate-300">
-                Update
-              </Button>
-            </div>
-            <Separator className="bg-slate-800" />
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-200">Export Data</p>
-                <p className="text-xs text-slate-500">Download all your financial data</p>
-              </div>
-              <Button variant="outline" size="sm" className="border-slate-700 text-slate-300">
-                Export
-              </Button>
-            </div>
+            <button className="w-full text-left p-4 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors">
+              <p className="text-gray-900 font-medium">Change Password</p>
+              <p className="text-sm text-gray-500">Update your password</p>
+            </button>
+            <button className="w-full text-left p-4 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors">
+              <p className="text-gray-900 font-medium">Export Data</p>
+              <p className="text-sm text-gray-500">Download all your data</p>
+            </button>
           </CardContent>
         </Card>
 
         {/* Danger Zone */}
-        <Card className="bg-slate-900 border-rose-900/50">
+        <Card className="bg-white border-red-200 shadow-sm">
           <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-rose-500/10 flex items-center justify-center">
-                <Trash2 className="h-5 w-5 text-rose-400" />
-              </div>
-              <div>
-                <CardTitle className="text-rose-400">Danger Zone</CardTitle>
-                <CardDescription className="text-slate-400">
-                  Irreversible actions
-                </CardDescription>
-              </div>
-            </div>
+            <CardTitle className="flex items-center gap-2 text-red-600">
+              <Trash2 className="h-5 w-5" />
+              Danger Zone
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-200">Delete Account</p>
-                <p className="text-xs text-slate-500">Permanently delete your account and all data</p>
-              </div>
-              <Button variant="outline" size="sm" className="border-rose-800 text-rose-400 hover:bg-rose-500/10">
-                Delete Account
-              </Button>
-            </div>
+            <p className="text-gray-500 mb-4">
+              Once you delete your account, there is no going back. Please be certain.
+            </p>
+            <button className="rounded-full border border-red-500 text-red-500 hover:bg-red-50 px-6 py-2.5 font-medium transition-colors">
+              Delete Account
+            </button>
           </CardContent>
         </Card>
       </div>
-    </>
+    </div>
   );
 }
