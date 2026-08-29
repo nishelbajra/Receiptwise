@@ -49,3 +49,6 @@ next-env.d.ts
 __pycache__/
 instance/
 *.db
+
+# Uploads
+public/uploads/
