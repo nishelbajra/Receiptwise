@@ -33,7 +33,10 @@ interface ExtractedData {
   taxAmount?: number;
   tipAmount?: number;
   totalAmount: number;
+  previousBalance?: number;
+  balanceDue?: number;
   currency: string;
+  referenceNumber?: string;
   paymentMethod?: string;
   lastFourDigits?: string;
   cardBrand?: string;
@@ -176,6 +179,22 @@ export default function UploadReceiptPage() {
     setError(null);
 
     try {
+      const formatUsd = (amount?: number) =>
+        amount == null || Number.isNaN(amount) ? null : `$${amount.toFixed(2)}`;
+      const notes: string[] = [];
+      if (editedData.previousBalance != null) {
+        notes.push(`Previous balance: ${formatUsd(editedData.previousBalance)}`);
+      }
+      if (editedData.previousBalance != null || editedData.balanceDue != null) {
+        notes.push(`Amount paid: ${formatUsd(editedData.totalAmount)}`);
+      }
+      if (editedData.balanceDue != null) {
+        notes.push(`New balance: ${formatUsd(editedData.balanceDue)}`);
+      }
+      if (editedData.referenceNumber) {
+        notes.push(`Reference: ${editedData.referenceNumber}`);
+      }
+
       const response = await fetch("/api/transactions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -193,6 +212,7 @@ export default function UploadReceiptPage() {
           categoryName: editedData.category,
           items: editedData.items,
           financialAccountId: selectedCardId,
+          notes: notes.length ? notes.join("\n") : undefined,
         }),
       });
 
@@ -210,9 +230,15 @@ export default function UploadReceiptPage() {
     }
   };
 
-  const updateField = (field: keyof ExtractedData, value: string | number) => {
+  const updateField = (field: keyof ExtractedData, value: string | number | undefined) => {
     if (!editedData) return;
     setEditedData({ ...editedData, [field]: value });
+  };
+
+  const parseMoneyInput = (value: string) => {
+    if (value === "") return undefined;
+    const parsed = parseFloat(value);
+    return Number.isNaN(parsed) ? undefined : parsed;
   };
 
   const resetUpload = () => {
@@ -448,15 +474,38 @@ export default function UploadReceiptPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
+                    <Label className="text-gray-700">Previous balance</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={editedData?.previousBalance ?? ""}
+                      onChange={(e) => updateField("previousBalance", parseMoneyInput(e.target.value))}
+                      className="border-gray-300 focus:border-red-500 focus:ring-red-500"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-700">New balance</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={editedData?.balanceDue ?? ""}
+                      onChange={(e) => updateField("balanceDue", parseMoneyInput(e.target.value))}
+                      className="border-gray-300 focus:border-red-500 focus:ring-red-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
                     <Label className="flex items-center gap-2 text-gray-700">
                       <DollarSign className="h-4 w-4" />
-                      Total
+                      Amount paid
                     </Label>
                     <Input
                       type="number"
                       step="0.01"
-                      value={editedData?.totalAmount || ""}
-                      onChange={(e) => updateField("totalAmount", parseFloat(e.target.value))}
+                      value={editedData?.totalAmount ?? ""}
+                      onChange={(e) => updateField("totalAmount", parseMoneyInput(e.target.value) ?? 0)}
                       className="border-gray-300 focus:border-red-500 focus:ring-red-500"
                     />
                   </div>
@@ -465,8 +514,8 @@ export default function UploadReceiptPage() {
                     <Input
                       type="number"
                       step="0.01"
-                      value={editedData?.taxAmount || ""}
-                      onChange={(e) => updateField("taxAmount", parseFloat(e.target.value))}
+                      value={editedData?.taxAmount ?? ""}
+                      onChange={(e) => updateField("taxAmount", parseMoneyInput(e.target.value))}
                       className="border-gray-300 focus:border-red-500 focus:ring-red-500"
                     />
                   </div>
@@ -478,8 +527,8 @@ export default function UploadReceiptPage() {
                     <Input
                       type="number"
                       step="0.01"
-                      value={editedData?.subtotal || ""}
-                      onChange={(e) => updateField("subtotal", parseFloat(e.target.value))}
+                      value={editedData?.subtotal ?? ""}
+                      onChange={(e) => updateField("subtotal", parseMoneyInput(e.target.value))}
                       className="border-gray-300 focus:border-red-500 focus:ring-red-500"
                     />
                   </div>
@@ -488,11 +537,20 @@ export default function UploadReceiptPage() {
                     <Input
                       type="number"
                       step="0.01"
-                      value={editedData?.tipAmount || ""}
-                      onChange={(e) => updateField("tipAmount", parseFloat(e.target.value))}
+                      value={editedData?.tipAmount ?? ""}
+                      onChange={(e) => updateField("tipAmount", parseMoneyInput(e.target.value))}
                       className="border-gray-300 focus:border-red-500 focus:ring-red-500"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-gray-700">Reference number</Label>
+                  <Input
+                    value={editedData?.referenceNumber || ""}
+                    onChange={(e) => updateField("referenceNumber", e.target.value)}
+                    className="border-gray-300 font-mono focus:border-red-500 focus:ring-red-500"
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -524,6 +582,47 @@ export default function UploadReceiptPage() {
                     <CreditCard className="h-4 w-4" />
                     Payment Card
                   </Label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-xs text-gray-500">Card brand</Label>
+                      <select
+                        value={editedData?.cardBrand || editedData?.paymentMethod || ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (!editedData) return;
+                          const isCard = ["VISA", "MASTERCARD", "AMEX", "DISCOVER"].includes(value);
+                          setEditedData({
+                            ...editedData,
+                            paymentMethod: value || undefined,
+                            cardBrand: isCard ? value : undefined,
+                          });
+                        }}
+                        className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 text-sm focus:border-red-500 focus:ring-red-500"
+                      >
+                        <option value="">Unknown</option>
+                        <option value="VISA">VISA</option>
+                        <option value="MASTERCARD">Mastercard</option>
+                        <option value="AMEX">Amex</option>
+                        <option value="DISCOVER">Discover</option>
+                        <option value="DEBIT">Debit</option>
+                        <option value="CASH">Cash</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs text-gray-500">Last 4 digits</Label>
+                      <Input
+                        inputMode="numeric"
+                        maxLength={4}
+                        placeholder="1234"
+                        value={editedData?.lastFourDigits || ""}
+                        onChange={(e) => {
+                          const digits = e.target.value.replace(/\D/g, "").slice(0, 4);
+                          updateField("lastFourDigits", digits);
+                        }}
+                        className="border-gray-300 font-mono focus:border-red-500 focus:ring-red-500"
+                      />
+                    </div>
+                  </div>
                   
                   {editedData?.lastFourDigits ? (
                     <div className="space-y-3">

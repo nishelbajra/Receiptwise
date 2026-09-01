@@ -44,11 +44,13 @@ next-env.d.ts
 *.swp
 *.swo
 
-# Old Flask files (archived)
+# Python / OCR Service
 *.pyc
 __pycache__/
 instance/
 *.db
+ocr-service/venv/
+ocr-service/.venv/
 
 # Uploads
 public/uploads/

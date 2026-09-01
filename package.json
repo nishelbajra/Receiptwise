@@ -9,7 +9,8 @@
     "lint": "next lint",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "ocr:start": "cd ocr-service && ./venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",

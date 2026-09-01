@@ -38,6 +38,7 @@ interface Transaction {
   tipAmount: number | null;
   totalAmount: number;
   currency: string;
+  notes: string | null;
   source: string;
   createdAt: string;
   category: { id: string; name: string } | null;
@@ -347,6 +348,11 @@ export default function TransactionDetailPage() {
                     </span>
                   </div>
                 </div>
+                {transaction.notes && (
+                  <p className="mt-4 whitespace-pre-line text-sm text-gray-600 border-t border-gray-100 pt-3">
+                    {transaction.notes}
+                  </p>
+                )}
               </CardContent>
             </Card>
 

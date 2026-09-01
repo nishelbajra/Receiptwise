@@ -35,7 +35,7 @@ ReceiptWise is a modern personal finance application that uses AI to automatical
 - **Backend**: Next.js API Routes, Server Actions
 - **Database**: PostgreSQL with Prisma ORM
 - **Authentication**: NextAuth.js v5
-- **AI**: OpenAI GPT-4o (Phase 2+)
+- **OCR**: Tesseract primary parser (local) + optional Gemini fill-in
 
 ## Getting Started
 
@@ -44,6 +44,8 @@ ReceiptWise is a modern personal finance application that uses AI to automatical
 - Node.js 20+ 
 - PostgreSQL 16+
 - npm or yarn
+- Python 3.9+
+- Tesseract OCR (`brew install tesseract`)
 
 ### Installation
 
@@ -70,12 +72,23 @@ npx prisma db push
 npx prisma generate
 ```
 
-5. Run the development server:
+5. Set up Tesseract OCR:
+```bash
+brew install tesseract
+cd ocr-service
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --port 8000
+```
+Or from the project root: `npm run ocr:start`
+
+6. Run the development server (in a new terminal):
 ```bash
 npm run dev
 ```
 
-6. Open [http://localhost:3000](http://localhost:3000)
+7. Open [http://localhost:3000](http://localhost:3000)
 
 ## Project Structure
 
