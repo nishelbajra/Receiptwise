@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { saveUploadedFile, fileToBase64, getMimeType, validateFile } from "@/lib/upload";
-import { extractReceiptData } from "@/lib/ai";
+import { processReceiptJob } from "@/lib/receipts/process";
+import { saveUploadedFile, validateFile } from "@/lib/upload";
+
+export const maxDuration = 120;
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,9 +14,8 @@ export async function POST(request: NextRequest) {
     }
 
     const formData = await request.formData();
-    const file = formData.get("file") as File | null;
-
-    if (!file) {
+    const file = formData.get("file");
+    if (!(file instanceof File)) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
@@ -24,7 +25,6 @@ export async function POST(request: NextRequest) {
     }
 
     const { storageKey } = await saveUploadedFile(file);
-
     const receipt = await db.receipt.create({
       data: {
         userId: session.user.id,
@@ -32,52 +32,40 @@ export async function POST(request: NextRequest) {
         originalFilename: file.name,
         mimeType: file.type,
         fileSizeBytes: file.size,
-        processingStatus: "PROCESSING",
+        processingStatus: "PENDING",
       },
     });
-
-    let extractedData = null;
-    let extractionError = null;
 
     try {
-      const base64 = await fileToBase64(file);
-      const mimeType = getMimeType(file);
-      extractedData = await extractReceiptData(base64, mimeType);
+      const extraction = await processReceiptJob({
+        userId: session.user.id,
+        receiptId: receipt.id,
+        file,
+      });
 
-      await db.receipt.update({
-        where: { id: receipt.id },
-        data: {
+      return NextResponse.json({
+        success: true,
+        receipt: {
+          id: receipt.id,
+          storageKey,
           processingStatus: "COMPLETED",
-          rawExtraction: extractedData as object,
-          extractionConfidence: extractedData.confidence,
         },
+        extraction,
       });
     } catch (error) {
-      extractionError = error instanceof Error ? error.message : "Extraction failed";
-      await db.receipt.update({
-        where: { id: receipt.id },
-        data: {
+      return NextResponse.json({
+        success: false,
+        receipt: {
+          id: receipt.id,
+          storageKey,
           processingStatus: "FAILED",
         },
-      });
+        extraction: null,
+        error: error instanceof Error ? error.message : "Receipt processing failed",
+      }, { status: 422 });
     }
-
-    return NextResponse.json({
-      success: true,
-      receipt: {
-        id: receipt.id,
-        storageKey: receipt.storageKey,
-        filePath: `/uploads/${receipt.storageKey}`,
-        processingStatus: extractedData ? "COMPLETED" : "FAILED",
-      },
-      extraction: extractedData,
-      error: extractionError,
-    });
   } catch (error) {
     console.error("Upload error:", error);
-    return NextResponse.json(
-      { error: "Failed to process upload" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to process upload" }, { status: 500 });
   }
 }

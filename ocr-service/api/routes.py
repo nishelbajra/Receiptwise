@@ -7,8 +7,6 @@ import logging
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from PIL import Image
 
-from extraction.gemini import enhance_with_gemini
-from extraction.merger import merge_extractions
 from ocr.tesseract import run_ocr, tesseract_version
 from parser.receipt_parser import parse_receipt
 from validation.receipt_validator import validate_receipt
@@ -30,12 +28,8 @@ def extract_receipt_from_image(image: Image.Image) -> dict:
             detail="No readable text found in the image. Please upload a clearer receipt photo.",
         )
 
-    primary = parse_receipt(text, ocr_result.get("confidence") or 0)
-    secondary = enhance_with_gemini(text, primary)
-    merged = merge_extractions(primary, secondary)
-    validated = validate_receipt(merged)
-
-    payload = validated.model_dump()
+    parsed = validate_receipt(parse_receipt(text, ocr_result.get("confidence") or 0))
+    payload = parsed.model_dump()
     payload["ocrConfidence"] = ocr_result.get("confidence")
     payload["lines"] = ocr_result.get("lines") or []
     return payload
@@ -45,7 +39,7 @@ def extract_receipt_from_image(image: Image.Image) -> dict:
 def root():
     return {
         "service": "tesseract",
-        "parser": "tesseract-primary",
+        "parser": "regex-rules",
         "status": "ok",
         "docs": "/docs",
         "health": "/health",
@@ -59,7 +53,7 @@ def health():
         return {
             "status": "ok",
             "service": "tesseract",
-            "parser": "tesseract-primary",
+            "parser": "regex-rules",
             "version": tesseract_version(),
         }
     except Exception as exc:

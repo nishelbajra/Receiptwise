@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { matchCardForUser } from "@/lib/cards";
+import { getOrCreateCategory } from "@/lib/categories-db";
 import { z } from "zod";
 
 const createTransactionSchema = z.object({
@@ -18,6 +20,8 @@ const createTransactionSchema = z.object({
   categoryName: z.string().optional().nullable(),
   paymentMethodConfidence: z.enum(["HIGH", "MEDIUM", "LOW", "UNKNOWN"]).default("UNKNOWN"),
   financialAccountId: z.string().optional().nullable(),
+  lastFourDigits: z.string().optional().nullable(),
+  cardBrand: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
   items: z.array(z.object({
     description: z.string(),
@@ -35,30 +39,35 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    console.log("Transaction request body:", JSON.stringify(body, null, 2));
-    
     const data = createTransactionSchema.parse(body);
-    console.log("Validated data:", JSON.stringify(data, null, 2));
 
     let categoryId = data.categoryId;
     if (!categoryId && data.categoryName) {
-      let category = await db.category.findFirst({
-        where: {
-          name: data.categoryName,
-          OR: [{ userId: session.user.id }, { isSystem: true }],
-        },
-      });
-
-      if (!category) {
-        category = await db.category.create({
-          data: {
-            name: data.categoryName,
-            userId: session.user.id,
-            isSystem: false,
-          },
-        });
-      }
+      const category = await getOrCreateCategory(data.categoryName);
       categoryId = category.id;
+    }
+
+    let financialAccountId = data.financialAccountId || undefined;
+    let paymentMethodConfidence = data.paymentMethodConfidence;
+    if (!financialAccountId && data.lastFourDigits) {
+      const matched = await matchCardForUser(
+        session.user.id,
+        data.lastFourDigits,
+        data.cardBrand
+      );
+      if (matched) {
+        financialAccountId = matched.id;
+        paymentMethodConfidence = "HIGH";
+      }
+    }
+
+    if (financialAccountId) {
+      const owned = await db.financialAccount.findFirst({
+        where: { id: financialAccountId, userId: session.user.id, isActive: true },
+      });
+      if (!owned) {
+        return NextResponse.json({ error: "Selected card was not found" }, { status: 400 });
+      }
     }
 
     const transaction = await db.transaction.create({
@@ -75,8 +84,8 @@ export async function POST(request: NextRequest) {
         totalAmount: data.totalAmount,
         currency: data.currency,
         categoryId: categoryId || undefined,
-        paymentMethodConfidence: data.paymentMethodConfidence,
-        financialAccountId: data.financialAccountId || undefined,
+        paymentMethodConfidence,
+        financialAccountId,
         notes: data.notes || undefined,
         source: data.receiptId ? "RECEIPT" : "MANUAL",
         items: data.items && data.items.length > 0 ? {
@@ -92,6 +101,7 @@ export async function POST(request: NextRequest) {
         category: true,
         items: true,
         receipt: true,
+        financialAccount: true,
       },
     });
 

@@ -1,6 +1,8 @@
 # Tesseract OCR Service
 
-Tesseract is the **primary** parser. Gemini only fills fields Tesseract left empty.
+Image cleanup → Tesseract → raw text → regex/rules parser.
+
+Qwen does **not** run here. Numbers stay deterministic.
 
 ```
 ocr-service/
@@ -8,17 +10,7 @@ ocr-service/
 ├── ocr/tesseract.py
 ├── ocr/preprocessing.py
 ├── parser/
-│   ├── merchant.py
-│   ├── address.py
-│   ├── date.py
-│   ├── money.py
-│   ├── payment.py
-│   └── receipt_parser.py
-├── extraction/
-│   ├── gemini.py
-│   └── merger.py
-├── validation/receipt_validator.py
-└── schemas/receipt.py
+└── validation/receipt_validator.py
 ```
 
 ## Run locally
@@ -34,6 +26,4 @@ uvicorn main:app --port 8000
 
 - `GET /health`
 - `POST /ocr` / `POST /ocr/base64` — raw Tesseract text
-- `POST /extract-receipt` / `POST /extract-receipt/base64` — structured receipt (primary)
-
-Set `ENABLE_GEMINI=false` to disable the secondary Gemini fill-in.
+- `POST /extract-receipt` / `POST /extract-receipt/base64` — parsed date, totals, merchant candidates

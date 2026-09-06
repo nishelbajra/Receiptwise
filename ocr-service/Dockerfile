@@ -16,7 +16,6 @@ COPY main.py .
 COPY api ./api
 COPY ocr ./ocr
 COPY parser ./parser
-COPY extraction ./extraction
 COPY validation ./validation
 COPY schemas ./schemas
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { matchCardForUser } from "@/lib/cards";
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,58 +10,24 @@ export async function POST(request: NextRequest) {
     }
 
     const { lastFourDigits, cardBrand } = await request.json();
+    const card = await matchCardForUser(session.user.id, lastFourDigits, cardBrand);
 
-    if (!lastFourDigits || lastFourDigits.length !== 4) {
-      return NextResponse.json({ 
-        matched: false, 
-        message: "No card digits provided" 
-      });
-    }
-
-    // Try to find exact match by last 4 digits
-    const matchedCard = await db.financialAccount.findFirst({
-      where: {
-        userId: session.user.id,
-        lastFourDigits: lastFourDigits,
-        isActive: true,
-        accountType: { in: ["CREDIT_CARD", "DEBIT_CARD"] },
-      },
-      include: {
-        cardBenefits: true,
-      },
-    });
-
-    if (matchedCard) {
-      // Verify card network if provided
-      const networkMatches = !cardBrand || 
-        cardBrand === "UNKNOWN" || 
-        matchedCard.cardNetwork === cardBrand ||
-        matchedCard.cardNetwork === "OTHER";
-
+    if (card) {
       return NextResponse.json({
         matched: true,
-        networkMatches,
-        card: {
-          id: matchedCard.id,
-          accountName: matchedCard.accountName,
-          institutionName: matchedCard.institutionName,
-          lastFourDigits: matchedCard.lastFourDigits,
-          cardNetwork: matchedCard.cardNetwork,
-          benefits: matchedCard.cardBenefits,
-        },
-        message: networkMatches 
-          ? `Matched to ${matchedCard.accountName} (${matchedCard.institutionName})`
-          : `Found card ending in ${lastFourDigits}, but network mismatch (receipt shows ${cardBrand}, card is ${matchedCard.cardNetwork})`,
+        card,
+        message: `Matched ${card.accountName} ending in ${card.lastFourDigits}`,
       });
     }
 
-    // No match found - suggest adding the card
     return NextResponse.json({
       matched: false,
       lastFourDigits,
       cardBrand: cardBrand || "UNKNOWN",
-      message: `No registered card ending in ${lastFourDigits}. Would you like to add this card?`,
-      suggestAdd: true,
+      suggestAdd: Boolean(lastFourDigits && String(lastFourDigits).length === 4),
+      message: lastFourDigits
+        ? `No registered card ending in ${lastFourDigits}. Add it under Accounts.`
+        : "No card digits provided",
     });
   } catch (error) {
     console.error("Error matching card:", error);

@@ -4,7 +4,7 @@ import re
 
 from parser.address import extract_address
 from parser.date import extract_date, extract_time
-from parser.merchant import extract_merchant
+from parser.merchant import extract_merchant, extract_merchant_candidates
 from parser.money import extract_money
 from parser.payment import extract_payment
 from schemas.receipt import ReceiptExtraction
@@ -46,6 +46,7 @@ def parse_receipt(ocr_text: str, ocr_confidence: float = 0.0) -> ReceiptExtracti
 
     return ReceiptExtraction(
         merchantName=merchant,
+        merchantCandidates=extract_merchant_candidates(lines, ocr_text),
         merchantAddress=extract_address(ocr_text),
         transactionDate=extract_date(ocr_text),
         transactionTime=extract_time(ocr_text),

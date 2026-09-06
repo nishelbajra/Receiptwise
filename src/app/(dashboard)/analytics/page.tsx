@@ -1,56 +1,57 @@
+import { auth } from "@/lib/auth";
 import { Header } from "@/components/layout/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PieChart, TrendingUp, Calendar, BarChart3 } from "lucide-react";
+import { getSpendingByCategory, getSpendingSummary, compareMonths } from "@/lib/assistant/tools";
+import { formatCurrency } from "@/lib/utils";
+import { BarChart3, PieChart, TrendingUp } from "lucide-react";
 
-export default function AnalyticsPage() {
+export default async function AnalyticsPage() {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) return null;
+
+  const now = new Date();
+  const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const last = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastMonth = `${last.getFullYear()}-${String(last.getMonth() + 1).padStart(2, "0")}`;
+
+  const [summary, byCategory, comparison] = await Promise.all([
+    getSpendingSummary(userId, thisMonth),
+    getSpendingByCategory(userId, thisMonth),
+    compareMonths(userId, thisMonth, lastMonth),
+  ]);
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <Header title="Analytics" />
-      
       <div className="p-6 space-y-6">
-        {/* Charts Grid */}
         <div className="grid lg:grid-cols-2 gap-6">
-          {/* Spending by Category */}
           <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-gray-900">
                 <PieChart className="h-5 w-5 text-red-500" />
-                Spending by Category
+                Spending by Category · {summary.month}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col items-center justify-center py-16">
-                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                  <PieChart className="h-8 w-8 text-gray-400" />
+              {byCategory.categories.length === 0 ? (
+                <p className="text-gray-500 py-12 text-center">Add confirmed transactions to see a breakdown</p>
+              ) : (
+                <div className="space-y-3">
+                  {byCategory.categories.map((row) => (
+                    <div key={row.category} className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{row.category}</p>
+                        <p className="text-xs text-gray-500">{row.count} transactions</p>
+                      </div>
+                      <p className="font-semibold">{formatCurrency(row.total)}</p>
+                    </div>
+                  ))}
                 </div>
-                <p className="text-gray-500 text-center">
-                  Add transactions to see category breakdown
-                </p>
-              </div>
+              )}
             </CardContent>
           </Card>
 
-          {/* Spending Over Time */}
-          <Card className="bg-white border-gray-200 shadow-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-gray-900">
-                <TrendingUp className="h-5 w-5 text-red-500" />
-                Spending Over Time
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col items-center justify-center py-16">
-                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                  <TrendingUp className="h-8 w-8 text-gray-400" />
-                </div>
-                <p className="text-gray-500 text-center">
-                  Track your spending trends over time
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Monthly Comparison */}
           <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-gray-900">
@@ -58,35 +59,32 @@ export default function AnalyticsPage() {
                 Monthly Comparison
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="flex flex-col items-center justify-center py-16">
-                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                  <BarChart3 className="h-8 w-8 text-gray-400" />
-                </div>
-                <p className="text-gray-500 text-center">
-                  Compare spending across months
-                </p>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between">
+                <span className="text-gray-600">{comparison.monthA.month}</span>
+                <span className="font-semibold">{formatCurrency(comparison.monthA.totalSpent)}</span>
               </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">{comparison.monthB.month}</span>
+                <span className="font-semibold">{formatCurrency(comparison.monthB.totalSpent)}</span>
+              </div>
+              <p className="text-sm text-gray-500">
+                Change: {formatCurrency(comparison.delta)}
+                {comparison.percentChange != null ? ` (${comparison.percentChange}%)` : ""}
+              </p>
             </CardContent>
           </Card>
 
-          {/* Calendar View */}
-          <Card className="bg-white border-gray-200 shadow-sm">
+          <Card className="bg-white border-gray-200 shadow-sm lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-gray-900">
-                <Calendar className="h-5 w-5 text-red-500" />
-                Calendar View
+                <TrendingUp className="h-5 w-5 text-red-500" />
+                This month
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col items-center justify-center py-16">
-                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                  <Calendar className="h-8 w-8 text-gray-400" />
-                </div>
-                <p className="text-gray-500 text-center">
-                  View daily spending on a calendar
-                </p>
-              </div>
+              <p className="text-3xl font-bold text-gray-900">{formatCurrency(summary.totalSpent)}</p>
+              <p className="text-sm text-gray-500 mt-1">{summary.transactionCount} confirmed transactions</p>
             </CardContent>
           </Card>
         </div>

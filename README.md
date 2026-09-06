@@ -1,127 +1,121 @@
 # ReceiptWise
 
-AI-Powered Personal Financial Intelligence Platform
+Local receipt tracking for a student MVP: photograph a receipt, confirm the draft, then ask questions about confirmed spending.
 
-![Next.js](https://img.shields.io/badge/Next.js-14-black)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38bdf8)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791)
+## Architecture
 
-## Overview
-
-ReceiptWise is a modern personal finance application that uses AI to automatically extract and categorize transactions from receipt photos. Track your spending, understand your financial patterns, and get intelligent insights - all from simply snapping a photo of your receipts.
-
-## Features
-
-### Current (Phase 1)
-- ✅ User authentication (email + Google OAuth)
-- ✅ Modern dashboard with spending overview
-- ✅ Receipt upload interface
-- ✅ Transaction management
-- ✅ Financial account management
-- ✅ AI assistant interface
-- ✅ Settings and notifications
-
-### Coming Soon
-- 📷 AI-powered receipt scanning (GPT-4o Vision)
-- 📊 Advanced spending analytics
-- 💳 Credit card reward optimization
-- 🔔 Proactive financial alerts
-- 🏦 Bank account integration (Plaid)
-
-## Tech Stack
-
-- **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS, shadcn/ui
-- **Backend**: Next.js API Routes, Server Actions
-- **Database**: PostgreSQL with Prisma ORM
-- **Authentication**: NextAuth.js v5
-- **OCR**: Tesseract primary parser (local) + optional Gemini fill-in
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 20+ 
-- PostgreSQL 16+
-- npm or yarn
-- Python 3.9+
-- Tesseract OCR (`brew install tesseract`)
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/nishelbajra/expense_tracker.git
-cd expense_tracker
+```
+Browser
+  |
+  v
+Next.js web app
+  |
+  v
+Next.js API
+  |
+  +--> PostgreSQL          confirmed transactions, budgets, categories
+  +--> Private file storage original receipt images
+  +--> Python OCR service  image cleanup -> Tesseract -> raw text
+  +--> Receipt parser      regex/rules -> date, total, tax, merchant candidates
+  +--> Local Ollama        Qwen3 4B -> merchant, category, questions, assistant
 ```
 
-2. Install dependencies:
+| Task | Tool |
+| --- | --- |
+| Read printed receipt text | Tesseract |
+| Find total, tax, date | Rules/regex |
+| Clean merchant name | Qwen3 4B |
+| Choose a category | Qwen3 4B + fixed category list |
+| Ask about unclear values | Qwen3 4B |
+| Save financial data | User confirmation only |
+| Answer spending questions | Qwen3 4B + read-only database tools |
+
+Qwen does not extract dollar amounts. The assistant can only call:
+
+- `get_spending_summary(month)`
+- `get_spending_by_category(month)`
+- `get_transactions(filters)`
+- `compare_months(month_a, month_b)`
+- `get_budget_status()`
+
+## Stack
+
+- Next.js + TypeScript + Tailwind
+- PostgreSQL + Prisma
+- Auth.js / NextAuth (email/password; Google optional)
+- Python + FastAPI + Tesseract
+- Ollama + Qwen3 4B (4-bit)
+- Local disk storage (`storage/receipts`)
+
+Not used: Docling, Gemini, GPT-4o, Plaid, Redis/BullMQ.
+
+## Required to run
+
+These must be installed and running on this machine:
+
+1. **Node.js 20+**
+2. **PostgreSQL** with `DATABASE_URL` in `.env`
+3. **Tesseract** (`brew install tesseract`)
+4. **Python 3.11+** and the OCR virtualenv
+5. **Ollama** with the 4-bit Qwen3 4B model:
+
 ```bash
-npm install
+brew install ollama
+ollama serve
+ollama pull qwen3:4b
 ```
 
-3. Set up environment variables:
+6. `.env` values:
+   - `DATABASE_URL`
+   - `NEXTAUTH_SECRET`
+   - `NEXTAUTH_URL=http://localhost:3000`
+   - `OCR_SERVICE_URL=http://localhost:8000`
+   - `OLLAMA_HOST=http://localhost:11434`
+   - `OLLAMA_MODEL=qwen3:4b`
+
+Optional: `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`.
+
+A remote public app cannot stay free and always online unless this laptop is the server. That is expected for the student demo.
+
+## Setup
+
 ```bash
 cp .env.example .env
-# Edit .env with your database URL and secrets
-```
-
-4. Set up the database:
-```bash
+npm install
 npx prisma db push
 npx prisma generate
-```
 
-5. Set up Tesseract OCR:
-```bash
-brew install tesseract
 cd ocr-service
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-uvicorn main:app --port 8000
 ```
-Or from the project root: `npm run ocr:start`
 
-6. Run the development server (in a new terminal):
+## Run
+
+Terminal 1 — OCR:
+
+```bash
+npm run ocr:start
+```
+
+Terminal 2 — Ollama, if it is not already running:
+
+```bash
+ollama serve
+```
+
+Terminal 3 — app:
+
 ```bash
 npm run dev
 ```
 
-7. Open [http://localhost:3000](http://localhost:3000)
+Open [http://localhost:3000](http://localhost:3000). Check local services at [http://localhost:3000/api/health](http://localhost:3000/api/health).
 
-## Project Structure
+## Later, only if needed
 
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── (auth)/            # Auth pages (login, register)
-│   ├── (dashboard)/       # Protected dashboard pages
-│   └── api/               # API routes
-├── components/
-│   ├── ui/                # shadcn/ui components
-│   └── layout/            # Layout components
-├── lib/                   # Utilities and configurations
-└── types/                 # TypeScript type definitions
-```
-
-## Development Roadmap
-
-- **Phase 1**: Foundation (Auth, Dashboard, UI) ✅
-- **Phase 2**: Receipt Processing (AI extraction, transaction creation)
-- **Phase 3**: Analytics (Charts, insights, budgets)
-- **Phase 4**: AI Assistant (Conversational financial queries)
-- **Phase 5**: Notifications (Alerts, insights, emails)
-- **Phase 6**: Payment Methods (Card matching, benefits)
-
-## Contributing
-
-This is a personal portfolio project. Feel free to fork and adapt for your own use.
-
-## License
-
-MIT
-
----
-
-
+- Private S3-compatible storage
+- Redis/BullMQ if upload volume grows
+- Docling if you need strong PDF/invoice/table handling
+- A VPS if you want the app online when the laptop is off

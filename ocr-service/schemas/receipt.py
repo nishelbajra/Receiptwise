@@ -26,6 +26,7 @@ class ReceiptExtraction(BaseModel):
     lastFourDigits: Optional[str] = None
     cardBrand: Optional[str] = None
     category: str = "Other"
+    merchantCandidates: List[str] = Field(default_factory=list)
     items: List[dict] = Field(default_factory=list)
     confidence: float = 0.0
     rawText: Optional[str] = None

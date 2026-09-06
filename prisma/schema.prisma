@@ -26,6 +26,7 @@ model User {
   budgets           Budget[]
   notifications     Notification[]
   aiInsights        AIInsight[]
+  processingJobs    ProcessingJob[]
 }
 
 model Account {
@@ -165,11 +166,46 @@ model Receipt {
   extractionConfidence Decimal?         @db.Decimal(3, 2)
   createdAt            DateTime         @default(now())
 
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   transaction Transaction?
+  jobs        ProcessingJob[]
 
   @@index([userId])
   @@index([processingStatus])
+}
+
+enum JobType {
+  RECEIPT_PROCESS
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model ProcessingJob {
+  id          String    @id @default(cuid())
+  userId      String
+  receiptId   String?
+  type        JobType
+  status      JobStatus @default(PENDING)
+  payload     Json?
+  result      Json?
+  error       String?
+  attempts    Int       @default(0)
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  receipt Receipt? @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([userId])
+  @@index([receiptId])
 }
 
 enum PaymentMethodConfidence {

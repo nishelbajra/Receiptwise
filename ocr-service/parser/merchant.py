@@ -22,12 +22,8 @@ _SKIP = re.compile(
 )
 
 
-def extract_merchant(lines: list[str], full_text: str = "") -> str:
-    blob = full_text or "\n".join(lines)
-    for pattern, name in KNOWN_MERCHANTS:
-        if pattern.search(blob):
-            return name
-
+def _header_candidates(lines: list[str]) -> list[str]:
+    candidates: list[str] = []
     for line in lines[:15]:
         trimmed = line.strip(" -=|_")
         if len(trimmed) < 6 or len(trimmed) > 50:
@@ -39,5 +35,23 @@ def extract_merchant(lines: list[str], full_text: str = "") -> str:
             continue
         if len(letters) / max(len(trimmed), 1) < 0.5:
             continue
-        return trimmed
-    return "Unknown Merchant"
+        if trimmed not in candidates:
+            candidates.append(trimmed)
+    return candidates
+
+
+def extract_merchant_candidates(lines: list[str], full_text: str = "") -> list[str]:
+    blob = full_text or "\n".join(lines)
+    candidates: list[str] = []
+    for pattern, name in KNOWN_MERCHANTS:
+        if pattern.search(blob) and name not in candidates:
+            candidates.append(name)
+    for name in _header_candidates(lines):
+        if name not in candidates:
+            candidates.append(name)
+    return candidates[:6]
+
+
+def extract_merchant(lines: list[str], full_text: str = "") -> str:
+    candidates = extract_merchant_candidates(lines, full_text)
+    return candidates[0] if candidates else "Unknown Merchant"

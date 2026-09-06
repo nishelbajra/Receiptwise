@@ -54,3 +54,4 @@ ocr-service/.venv/
 
 # Uploads
 public/uploads/
+/storage/

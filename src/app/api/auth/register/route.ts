@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
+import { ensureSystemCategories } from "@/lib/categories-db";
 import { z } from "zod";
 
 const registerSchema = z.object({
@@ -34,6 +35,8 @@ export async function POST(request: Request) {
         password: hashedPassword,
       },
     });
+
+    await ensureSystemCategories();
 
     return NextResponse.json(
       { message: "Account created successfully", userId: user.id },

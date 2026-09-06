@@ -96,33 +96,33 @@ export default async function LandingPage() {
             {[
               {
                 icon: Receipt,
-                title: "Smart Receipt Scanning",
-                description: "Take a photo of any receipt. Our AI extracts merchant, items, totals, and categorizes automatically.",
+                title: "Local receipt reading",
+                description: "Tesseract reads the photo. Rules find date, tax, and total. No cloud vision API.",
               },
               {
                 icon: Brain,
-                title: "AI Financial Assistant",
-                description: "Ask questions about your spending in plain English. Get instant, accurate answers from your actual data.",
+                title: "Qwen spending assistant",
+                description: "Ask questions about confirmed transactions. The model cannot invent or change records.",
               },
               {
                 icon: PieChart,
-                title: "Spending Analytics",
-                description: "Visualize where your money goes with beautiful charts and actionable insights.",
+                title: "Spending analytics",
+                description: "See totals by month and category from transactions you actually confirmed.",
               },
               {
                 icon: CreditCard,
-                title: "Card Reward Optimization",
-                description: "Track your credit cards and get suggestions for which card to use for maximum rewards.",
+                title: "Optional cards",
+                description: "Save cards if you want. They are not required to track a receipt.",
               },
               {
                 icon: Bell,
-                title: "Proactive Alerts",
-                description: "Get notified about unusual spending, budget limits, and important financial events.",
+                title: "Budget status",
+                description: "Set a monthly budget and ask the assistant how you are tracking.",
               },
               {
                 icon: Shield,
-                title: "Bank-Grade Security",
-                description: "Your financial data is encrypted at rest and in transit. We never sell your data.",
+                title: "Runs on your laptop",
+                description: "App, OCR, and Qwen stay local for the student MVP. No per-request AI charges.",
               },
             ].map((feature) => (
               <div 
@@ -153,10 +153,10 @@ export default async function LandingPage() {
 
         <div className="grid md:grid-cols-4 gap-8">
           {[
-            { step: "1", title: "Upload", description: "Take a photo or upload a PDF of your receipt" },
-            { step: "2", title: "Extract", description: "AI reads and extracts all transaction details" },
-            { step: "3", title: "Confirm", description: "Review and edit if needed, then save" },
-            { step: "4", title: "Insight", description: "See your dashboard update with new insights" },
+            { step: "1", title: "Upload", description: "Photograph a receipt and store it privately on disk" },
+            { step: "2", title: "Read", description: "Tesseract plus rules draft totals. Qwen cleans the merchant." },
+            { step: "3", title: "Confirm", description: "Nothing is saved as spending until you review it" },
+            { step: "4", title: "Ask", description: "Query confirmed records with the local assistant" },
           ].map((item) => (
             <div key={item.step} className="text-center">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-red-500 text-white text-xl font-bold mb-4 shadow-lg shadow-red-500/25">

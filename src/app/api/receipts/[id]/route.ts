@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { deleteStoredFile } from "@/lib/upload";
 
 export async function GET(
   request: NextRequest,
@@ -54,6 +55,7 @@ export async function DELETE(
     }
 
     await db.receipt.delete({ where: { id } });
+    await deleteStoredFile(receipt.storageKey);
 
     return NextResponse.json({ success: true });
   } catch (error) {
