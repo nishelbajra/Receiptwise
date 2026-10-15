@@ -14,6 +14,10 @@ const ALLOWED_TYPES = new Set([
 ]);
 
 function storageDir() {
+  // Vercel has read-only filesystem except /tmp
+  if (process.env.VERCEL) {
+    return "/tmp/receipts";
+  }
   return path.resolve(process.env.STORAGE_DIR || path.join(process.cwd(), "storage", "receipts"));
 }
 
