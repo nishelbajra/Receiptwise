@@ -1,4 +1,4 @@
-# ReceiptWise 🧾
+# ReceiptWise
 
 **AI-Powered Personal Finance Tracker**
 
@@ -6,16 +6,25 @@ ReceiptWise automatically extracts financial data from receipt photos using AI, 
 
 ![Landing Page](docs/screenshots/landing.png)
 
-## ✨ Features
+## Features
 
-- **📸 Smart Receipt Scanning** - Upload receipt photos and let AI extract merchant, items, totals, tax, and payment card details
-- **💳 Card Recognition** - Automatically detects card type and last 4 digits from receipts
-- **📊 Expense Tracking** - View all transactions with detailed breakdowns
-- **🏷️ Auto-Categorization** - Transactions are automatically categorized (Groceries, Restaurants, Transportation, etc.)
-- **🔐 Secure Authentication** - Email/password and Google OAuth sign-in
-- **📱 Responsive Design** - Works on desktop and mobile
+- **Smart Receipt Scanning** - Upload receipt photos and let AI extract merchant, items, totals, tax, and payment card details
+- **Card Recognition** - Automatically detects card type and last 4 digits from receipts
+- **Expense Tracking** - View all transactions with detailed breakdowns
+- **Auto-Categorization** - Transactions are automatically categorized (Groceries, Restaurants, Transportation, etc.)
+- **Secure Authentication** - Email/password and Google OAuth sign-in
+- **Responsive Design** - Works on desktop and mobile
 
-## 📸 Screenshots
+## How It Works
+
+1. **Add Your Cards First** - Go to the Accounts page and add your payment cards (Visa, Mastercard, etc.) with the last 4 digits
+2. **Upload Receipts** - Take a photo of your receipt and upload it
+3. **Automatic Matching** - The AI extracts the card details from the receipt and matches it to your saved cards
+4. **Track Spending by Card** - See which card was used for each transaction, helping you track spending across different accounts
+
+This workflow allows you to see exactly where each card is being used and monitor spending patterns per card.
+
+## Screenshots
 
 ### Dashboard
 ![Dashboard](docs/screenshots/dashboard.png)
@@ -29,21 +38,21 @@ ReceiptWise automatically extracts financial data from receipt photos using AI, 
 ### Login
 ![Login](docs/screenshots/login.png)
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend**: Next.js 15, React 18, TypeScript, Tailwind CSS
 - **Backend**: Next.js API Routes, Prisma ORM
 - **Database**: PostgreSQL
 - **Authentication**: NextAuth.js (Email + Google OAuth)
-- **AI/OCR**: Google Gemini 2.5 Flash (primary) / Tesseract + Ollama (local fallback)
+- **AI/OCR**: Google Gemini 2.5 Flash (cloud) / Tesseract + Ollama (local development)
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
 - PostgreSQL
-- (For local AI) Ollama with Qwen3 model OR Gemini API key
+- Gemini API key (for cloud) OR Ollama with Qwen3 model (for local development)
 
 ### Installation
 
@@ -114,7 +123,7 @@ ollama pull qwen3:4b
 npm run dev
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 receiptwise/
@@ -130,35 +139,34 @@ receiptwise/
 └── docs/                  # Documentation and screenshots
 ```
 
-## 🔑 API Keys
+## API Keys
 
-### Gemini API (Recommended)
+### Gemini API (Recommended for Deployment)
 1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
 2. Create a free API key
 3. Add to `.env` as `GEMINI_API_KEY`
 
-**Using Gemini 2.5 Flash** - Fast, accurate, and free tier includes 1,500 requests/day.
+Gemini 2.5 Flash is fast, accurate, and the free tier includes 1,500 requests per day.
 
-## 🚀 Deployment
+## Deployment
 
 ### Deploy to Vercel
 
 1. Push your code to GitHub
 2. Connect your repo to [Vercel](https://vercel.com)
 3. Set up a PostgreSQL database (recommend [Neon](https://neon.tech) - free tier)
-4. Add environment variables in Vercel dashboard
-5. Deploy!
+4. Add environment variables in Vercel dashboard:
+   - `DATABASE_URL` - Your Neon connection string
+   - `NEXTAUTH_SECRET` - A random secret string
+   - `GEMINI_API_KEY` - Your Gemini API key
+5. Deploy
 
-## 📄 License
+## License
 
 MIT License - feel free to use this project for personal or commercial purposes.
 
-## 👤 Author
+## Author
 
 **Nishel Bajracharya**
 
 - GitHub: [@nishelbajra](https://github.com/nishelbajra)
-
----
-
-⭐ Star this repo if you find it helpful!
