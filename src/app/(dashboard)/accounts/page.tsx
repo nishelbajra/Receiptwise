@@ -50,7 +50,7 @@ export default function AccountsPage() {
         setCards(data.cards);
       }
     } catch {
-      console.error("Failed to fetch cards:", err);
+      console.error("Failed to fetch cards");
     } finally {
       setLoading(false);
     }
@@ -100,7 +100,7 @@ export default function AccountsPage() {
         setCards(cards.filter((c) => c.id !== id));
       }
     } catch {
-      console.error("Failed to delete card:", err);
+      console.error("Failed to delete card");
     }
   }
 
