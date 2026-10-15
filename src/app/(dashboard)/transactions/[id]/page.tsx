@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -60,7 +60,6 @@ interface Transaction {
 
 export default function TransactionDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const [transaction, setTransaction] = useState<Transaction | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -77,7 +76,7 @@ export default function TransactionDetailPage() {
         }
 
         setTransaction(data.transaction);
-      } catch (err) {
+      } catch {
         setError("Failed to load transaction");
       } finally {
         setLoading(false);

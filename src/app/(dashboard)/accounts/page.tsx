@@ -49,7 +49,7 @@ export default function AccountsPage() {
       if (data.cards) {
         setCards(data.cards);
       }
-    } catch (err) {
+    } catch {
       console.error("Failed to fetch cards:", err);
     } finally {
       setLoading(false);
@@ -84,7 +84,7 @@ export default function AccountsPage() {
         cardNetwork: "VISA",
         accountType: "CREDIT_CARD",
       });
-    } catch (err) {
+    } catch {
       setError("Failed to add card");
     } finally {
       setSaving(false);
@@ -99,7 +99,7 @@ export default function AccountsPage() {
       if (res.ok) {
         setCards(cards.filter((c) => c.id !== id));
       }
-    } catch (err) {
+    } catch {
       console.error("Failed to delete card:", err);
     }
   }
