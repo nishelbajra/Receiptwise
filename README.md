@@ -142,28 +142,6 @@ receiptwise/
 └── docs/                  # Documentation and screenshots
 ```
 
-## API Keys
-
-### Gemini API (Recommended for Deployment)
-1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
-2. Create a free API key
-3. Add to `.env` as `GEMINI_API_KEY`
-
-Gemini 2.5 Flash is fast, accurate, and the free tier includes 1,500 requests per day.
-
-## Deployment
-
-### Deploy to Vercel
-
-1. Push your code to GitHub
-2. Connect your repo to [Vercel](https://vercel.com)
-3. Set up a PostgreSQL database (recommend [Neon](https://neon.tech) - free tier)
-4. Add environment variables in Vercel dashboard:
-   - `DATABASE_URL` - Your Neon connection string
-   - `NEXTAUTH_SECRET` - A random secret string
-   - `GEMINI_API_KEY` - Your Gemini API key
-5. Deploy
-
 ## License
 
 MIT License - feel free to use this project for personal or commercial purposes.
