@@ -43,6 +43,25 @@ export async function POST(request: NextRequest) {
         file,
       });
 
+      // Auto-confirm: Create transaction immediately
+      const transaction = await db.transaction.create({
+        data: {
+          userId: session.user.id,
+          receiptId: receipt.id,
+          merchantName: extraction.merchantName || "Unknown Merchant",
+          merchantAddress: extraction.merchantAddress,
+          transactionDate: extraction.transactionDate 
+            ? new Date(extraction.transactionDate) 
+            : new Date(),
+          totalAmount: extraction.totalAmount || 0,
+          subtotal: extraction.subtotal,
+          taxAmount: extraction.taxAmount,
+          tipAmount: extraction.tipAmount,
+          currency: extraction.currency || "USD",
+          source: "RECEIPT",
+        },
+      });
+
       return NextResponse.json({
         success: true,
         receipt: {
@@ -51,6 +70,7 @@ export async function POST(request: NextRequest) {
           processingStatus: "COMPLETED",
         },
         extraction,
+        transaction: { id: transaction.id },
       });
     } catch (error) {
       return NextResponse.json({

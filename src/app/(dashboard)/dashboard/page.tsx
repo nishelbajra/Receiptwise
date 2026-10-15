@@ -85,7 +85,7 @@ export default async function DashboardPage() {
           <h2 className="text-2xl font-bold text-gray-900">
             Welcome back, {session?.user?.name?.split(" ")[0] || "there"}
           </h2>
-          <p className="text-gray-500 mt-1">Confirmed spending only. Draft receipts are not counted.</p>
+          <p className="text-gray-500 mt-1">Your spending overview at a glance.</p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -121,7 +121,7 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-gray-900">{formatCurrency(spentMonth.total)}</div>
-              <p className="text-xs text-gray-500 mt-1">{spentMonth.count} confirmed transactions</p>
+              <p className="text-xs text-gray-500 mt-1">{spentMonth.count} transactions</p>
             </CardContent>
           </Card>
 
