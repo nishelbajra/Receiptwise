@@ -251,7 +251,7 @@ export default function UploadReceiptPage() {
                       </Button>
                     </div>
                     <p className="text-xs text-gray-500">
-                      Tesseract reads the text, rules find totals, and Qwen only cleans the merchant and category.
+                      Powered by Gemini 2.5 Flash AI for accurate receipt extraction and categorization.
                     </p>
                   </div>
                 ) : (

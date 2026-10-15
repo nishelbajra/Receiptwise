@@ -1,121 +1,164 @@
-# ReceiptWise
+# ReceiptWise 🧾
 
-Local receipt tracking for a student MVP: photograph a receipt, confirm the draft, then ask questions about confirmed spending.
+**AI-Powered Personal Finance Tracker**
 
-## Architecture
+ReceiptWise automatically extracts financial data from receipt photos using AI, helping you track spending, categorize transactions, and manage your finances effortlessly.
 
-```
-Browser
-  |
-  v
-Next.js web app
-  |
-  v
-Next.js API
-  |
-  +--> PostgreSQL          confirmed transactions, budgets, categories
-  +--> Private file storage original receipt images
-  +--> Python OCR service  image cleanup -> Tesseract -> raw text
-  +--> Receipt parser      regex/rules -> date, total, tax, merchant candidates
-  +--> Local Ollama        Qwen3 4B -> merchant, category, questions, assistant
-```
+![Landing Page](docs/screenshots/landing.png)
 
-| Task | Tool |
-| --- | --- |
-| Read printed receipt text | Tesseract |
-| Find total, tax, date | Rules/regex |
-| Clean merchant name | Qwen3 4B |
-| Choose a category | Qwen3 4B + fixed category list |
-| Ask about unclear values | Qwen3 4B |
-| Save financial data | User confirmation only |
-| Answer spending questions | Qwen3 4B + read-only database tools |
+## ✨ Features
 
-Qwen does not extract dollar amounts. The assistant can only call:
+- **📸 Smart Receipt Scanning** - Upload receipt photos and let AI extract merchant, items, totals, tax, and payment card details
+- **💳 Card Recognition** - Automatically detects card type and last 4 digits from receipts
+- **📊 Expense Tracking** - View all transactions with detailed breakdowns
+- **🏷️ Auto-Categorization** - Transactions are automatically categorized (Groceries, Restaurants, Transportation, etc.)
+- **🔐 Secure Authentication** - Email/password and Google OAuth sign-in
+- **📱 Responsive Design** - Works on desktop and mobile
 
-- `get_spending_summary(month)`
-- `get_spending_by_category(month)`
-- `get_transactions(filters)`
-- `compare_months(month_a, month_b)`
-- `get_budget_status()`
+## 📸 Screenshots
 
-## Stack
+### Dashboard
+![Dashboard](docs/screenshots/dashboard.png)
 
-- Next.js + TypeScript + Tailwind
-- PostgreSQL + Prisma
-- Auth.js / NextAuth (email/password; Google optional)
-- Python + FastAPI + Tesseract
-- Ollama + Qwen3 4B (4-bit)
-- Local disk storage (`storage/receipts`)
+### Receipt Scanning
+![Receipt Scan](docs/screenshots/receipt-scan.jpg)
 
-Not used: Docling, Gemini, GPT-4o, Plaid, Redis/BullMQ.
+### Transactions
+![Transactions](docs/screenshots/transactions.png)
 
-## Required to run
+### Login
+![Login](docs/screenshots/login.png)
 
-These must be installed and running on this machine:
+## 🛠️ Tech Stack
 
-1. **Node.js 20+**
-2. **PostgreSQL** with `DATABASE_URL` in `.env`
-3. **Tesseract** (`brew install tesseract`)
-4. **Python 3.11+** and the OCR virtualenv
-5. **Ollama** with the 4-bit Qwen3 4B model:
+- **Frontend**: Next.js 15, React 18, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Prisma ORM
+- **Database**: PostgreSQL
+- **Authentication**: NextAuth.js (Email + Google OAuth)
+- **AI/OCR**: Google Gemini 2.5 Flash (primary) / Tesseract + Ollama (local fallback)
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- PostgreSQL
+- (For local AI) Ollama with Qwen3 model OR Gemini API key
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/nishelbajra/Receiptwise.git
+   cd Receiptwise
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit `.env` with your configuration:
+   ```env
+   DATABASE_URL="postgresql://user:password@localhost:5432/receiptwise"
+   NEXTAUTH_SECRET="your-secret-key"
+   NEXTAUTH_URL="http://localhost:3000"
+   
+   # For Google OAuth (optional)
+   GOOGLE_CLIENT_ID="your-google-client-id"
+   GOOGLE_CLIENT_SECRET="your-google-client-secret"
+   
+   # For AI Receipt Scanning (choose one)
+   # Option 1: Gemini API (recommended for deployment)
+   GEMINI_API_KEY="your-gemini-api-key"
+   
+   # Option 2: Local Ollama
+   OLLAMA_HOST="http://localhost:11434"
+   OLLAMA_MODEL="qwen3:4b"
+   OCR_SERVICE_URL="http://localhost:8000"
+   ```
+
+4. **Set up the database**
+   ```bash
+   npx prisma migrate dev
+   npx prisma generate
+   ```
+
+5. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Open [http://localhost:3000](http://localhost:3000)**
+
+### Running with Local AI (Optional)
+
+If you prefer local AI processing instead of Gemini:
 
 ```bash
-brew install ollama
+# Terminal 1: Start OCR service
+cd ocr-service
+source venv/bin/activate
+uvicorn main:app --port 8000
+
+# Terminal 2: Start Ollama
 ollama serve
 ollama pull qwen3:4b
-```
 
-6. `.env` values:
-   - `DATABASE_URL`
-   - `NEXTAUTH_SECRET`
-   - `NEXTAUTH_URL=http://localhost:3000`
-   - `OCR_SERVICE_URL=http://localhost:8000`
-   - `OLLAMA_HOST=http://localhost:11434`
-   - `OLLAMA_MODEL=qwen3:4b`
-
-Optional: `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`.
-
-A remote public app cannot stay free and always online unless this laptop is the server. That is expected for the student demo.
-
-## Setup
-
-```bash
-cp .env.example .env
-npm install
-npx prisma db push
-npx prisma generate
-
-cd ocr-service
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-## Run
-
-Terminal 1 — OCR:
-
-```bash
-npm run ocr:start
-```
-
-Terminal 2 — Ollama, if it is not already running:
-
-```bash
-ollama serve
-```
-
-Terminal 3 — app:
-
-```bash
+# Terminal 3: Start the app
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Check local services at [http://localhost:3000/api/health](http://localhost:3000/api/health).
+## 📁 Project Structure
 
-## Later, only if needed
+```
+receiptwise/
+├── src/
+│   ├── app/                 # Next.js App Router
+│   │   ├── (auth)/         # Auth pages (login, register)
+│   │   ├── (dashboard)/    # Protected dashboard pages
+│   │   └── api/            # API routes
+│   ├── components/         # React components
+│   └── lib/                # Utilities and configurations
+├── prisma/                 # Database schema
+├── ocr-service/           # Python OCR service (for local AI)
+└── docs/                  # Documentation and screenshots
+```
 
-- Private S3-compatible storage
-- Redis/BullMQ if upload volume grows
-- Docling if you need strong PDF/invoice/table handling
-- A VPS if you want the app online when the laptop is off
+## 🔑 API Keys
+
+### Gemini API (Recommended)
+1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Create a free API key
+3. Add to `.env` as `GEMINI_API_KEY`
+
+**Using Gemini 2.5 Flash** - Fast, accurate, and free tier includes 1,500 requests/day.
+
+## 🚀 Deployment
+
+### Deploy to Vercel
+
+1. Push your code to GitHub
+2. Connect your repo to [Vercel](https://vercel.com)
+3. Set up a PostgreSQL database (recommend [Neon](https://neon.tech) - free tier)
+4. Add environment variables in Vercel dashboard
+5. Deploy!
+
+## 📄 License
+
+MIT License - feel free to use this project for personal or commercial purposes.
+
+## 👤 Author
+
+**Nishel Bajracharya**
+
+- GitHub: [@nishelbajra](https://github.com/nishelbajra)
+
+---
+
+⭐ Star this repo if you find it helpful!

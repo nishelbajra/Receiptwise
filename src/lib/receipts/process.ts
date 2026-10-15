@@ -1,7 +1,8 @@
 import { matchCardForUser } from "@/lib/cards";
 import { db } from "@/lib/db";
-import { extractReceiptFromFile, missingFieldQuestions, type ReceiptDraft } from "@/lib/ocr";
+import { extractReceiptFromFile, missingFieldQuestions, type ReceiptDraft, type ParsedReceipt } from "@/lib/ocr";
 import { enrichReceiptWithOllama } from "@/lib/ollama";
+import { extractReceiptWithGemini, isGeminiConfigured } from "@/lib/gemini";
 
 function toJson(value: ReceiptDraft) {
   return JSON.parse(JSON.stringify(value)) as object;
@@ -30,7 +31,18 @@ export async function processReceiptJob(options: {
       data: { processingStatus: "PROCESSING" },
     });
 
-    const parsed = await extractReceiptFromFile(options.file);
+    // Use Gemini if configured, otherwise fall back to local OCR
+    let parsed: ParsedReceipt;
+    const useGemini = isGeminiConfigured();
+    
+    if (useGemini) {
+      console.log("Using Gemini API for receipt extraction");
+      parsed = await extractReceiptWithGemini(options.file);
+    } else {
+      console.log("Using local OCR service for receipt extraction");
+      parsed = await extractReceiptFromFile(options.file);
+    }
+    
     const matchedCard = await matchCardForUser(
       options.userId,
       parsed.lastFourDigits,
@@ -47,23 +59,26 @@ export async function processReceiptJob(options: {
     let draft: ReceiptDraft = {
       ...parsed,
       questions,
-      enrichmentSource: "parser-only",
+      enrichmentSource: useGemini ? "gemini" as const : "parser-only",
       matchedCard,
       financialAccountId: matchedCard?.id ?? null,
       paymentMethodConfidence: matchedCard ? "HIGH" : parsed.lastFourDigits ? "MEDIUM" : "UNKNOWN",
     };
 
-    try {
-      const enrichment = await enrichReceiptWithOllama(parsed);
-      draft = {
-        ...draft,
-        merchantName: enrichment.merchantName || parsed.merchantName,
-        category: enrichment.category || parsed.category,
-        questions: questions.length ? questions : enrichment.questions,
-        enrichmentSource: "ollama",
-      };
-    } catch (error) {
-      console.warn("Ollama enrichment skipped:", error);
+    // Only use Ollama enrichment if not using Gemini (Gemini already does enrichment)
+    if (!useGemini) {
+      try {
+        const enrichment = await enrichReceiptWithOllama(parsed);
+        draft = {
+          ...draft,
+          merchantName: enrichment.merchantName || parsed.merchantName,
+          category: enrichment.category || parsed.category,
+          questions: questions.length ? questions : enrichment.questions,
+          enrichmentSource: "ollama",
+        };
+      } catch (error) {
+        console.warn("Ollama enrichment skipped:", error);
+      }
     }
 
     await db.receipt.update({

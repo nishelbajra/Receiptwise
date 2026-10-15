@@ -46,7 +46,7 @@ export interface MatchedCardDraft {
 
 export interface ReceiptDraft extends ParsedReceipt {
   questions: ReceiptQuestion[];
-  enrichmentSource: "ollama" | "parser-only";
+  enrichmentSource: "ollama" | "parser-only" | "gemini";
   financialAccountId?: string | null;
   matchedCard?: MatchedCardDraft | null;
   paymentMethodConfidence?: "HIGH" | "MEDIUM" | "LOW" | "UNKNOWN";

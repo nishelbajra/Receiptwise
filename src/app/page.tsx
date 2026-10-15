@@ -96,8 +96,8 @@ export default async function LandingPage() {
             {[
               {
                 icon: Receipt,
-                title: "Local receipt reading",
-                description: "Tesseract reads the photo. Rules find date, tax, and total. No cloud vision API.",
+                title: "AI-Powered Extraction",
+                description: "Gemini 2.5 Flash AI extracts merchant, items, totals, tax, and card details instantly.",
               },
               {
                 icon: Brain,
