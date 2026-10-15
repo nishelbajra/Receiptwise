@@ -2,6 +2,8 @@
 
 **AI-Powered Personal Finance Tracker**
 
+**Live Demo:** [https://receiptwise-sand.vercel.app](https://receiptwise-sand.vercel.app)
+
 ReceiptWise automatically extracts financial data from receipt photos using AI, helping you track spending, categorize transactions, and manage your finances effortlessly.
 
 ![Landing Page](docs/screenshots/landing.png)
