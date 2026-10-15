@@ -14,6 +14,7 @@ ReceiptWise automatically extracts financial data from receipt photos using AI, 
 - **Card Recognition** - Automatically detects card type and last 4 digits from receipts
 - **Expense Tracking** - View all transactions with detailed breakdowns
 - **Auto-Categorization** - Transactions are automatically categorized (Groceries, Restaurants, Transportation, etc.)
+- **AI Assistant** - Chat with an AI assistant to get insights about your spending (available for local development, cloud support coming soon)
 - **Secure Authentication** - Email/password and Google OAuth sign-in
 - **Responsive Design** - Works on desktop and mobile
 
